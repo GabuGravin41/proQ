@@ -233,44 +233,47 @@ export default function CapabilityProfilePage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
-              {PREDEFINED_SECTORS.map((sector) => {
-                const Icon = sector.icon;
-                const isSelected = selectedSectors.includes(sector.label);
-                return (
-                  <div
-                    key={sector.id}
-                    onClick={() => toggleSector(sector.label)}
-                    className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3.5 ${
-                      isSelected
-                        ? 'border-indigo-500 ring-1 ring-indigo-500/20 bg-card shadow-sm'
-                        : 'border-border bg-card hover:bg-muted/50'
-                    }`}
-                  >
-                    {/* Domain-specific distinct color avatar */}
-                    <div className={`p-2.5 rounded-xl shrink-0 transition-all border ${
-                      isSelected ? sector.colorClasses : 'bg-muted text-muted-foreground border-border'
-                    }`}>
-                      <Icon size={18} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <div className="flex items-center justify-between">
-                        <p className={`text-xs font-bold ${isSelected ? 'text-foreground font-extrabold' : 'text-muted-foreground'}`}>
-                          {sector.label}
-                        </p>
-                        {isSelected ? (
-                          <span className="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px]">
-                            <Check size={12} />
-                          </span>
-                        ) : (
-                          <span className="w-5 h-5 rounded-full border border-border" />
-                        )}
+            {/* Scrollable Container on Mobile & Desktop */}
+            <div className="max-h-[360px] sm:max-h-[400px] overflow-y-auto pr-1.5 scrollbar-thin">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pb-1">
+                {PREDEFINED_SECTORS.map((sector) => {
+                  const Icon = sector.icon;
+                  const isSelected = selectedSectors.includes(sector.label);
+                  return (
+                    <div
+                      key={sector.id}
+                      onClick={() => toggleSector(sector.label)}
+                      className={`p-3.5 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${
+                        isSelected
+                          ? 'border-indigo-500 ring-1 ring-indigo-500/20 bg-card shadow-sm'
+                          : 'border-border bg-card hover:bg-muted/50'
+                      }`}
+                    >
+                      {/* Domain-specific distinct color avatar */}
+                      <div className={`p-2 rounded-xl shrink-0 transition-all border ${
+                        isSelected ? sector.colorClasses : 'bg-muted text-muted-foreground border-border'
+                      }`}>
+                        <Icon size={16} />
                       </div>
-                      <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">{sector.desc}</p>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between">
+                          <p className={`text-xs font-bold ${isSelected ? 'text-foreground font-extrabold' : 'text-muted-foreground'}`}>
+                            {sector.label}
+                          </p>
+                          {isSelected ? (
+                            <span className="w-4 h-4 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px]">
+                              <Check size={10} />
+                            </span>
+                          ) : (
+                            <span className="w-4 h-4 rounded-full border border-border" />
+                          )}
+                        </div>
+                        <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">{sector.desc}</p>
+                      </div>
                     </div>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
           </div>
 
