@@ -3,33 +3,44 @@
 @tailwind utilities;
 
 :root {
-  --background: #F8FAF9;
-  --foreground: #0F172A;
-  --primary: #047857;
+  /* Brand Primary: Royal Indigo */
+  --background: #F9FAFB;
+  --foreground: #111827;
+  --primary: #4F46E5;
   --primary-foreground: #FFFFFF;
-  --secondary: #ECFDF5;
-  --secondary-foreground: #065F46;
-  --accent: #059669;
+  
+  /* Brand Secondary: Soft Indigo Mist */
+  --secondary: #EEF2FF;
+  --secondary-foreground: #3730A3;
+  
+  /* Accent: Warm Solar Gold (for AI Sparkles, Pro badges, Highlights) */
+  --accent: #F59E0B;
   --accent-foreground: #FFFFFF;
-  --muted: #F1F5F4;
-  --muted-foreground: #52606D;
+  
+  /* Neutrals */
+  --muted: #F3F4F6;
+  --muted-foreground: #6B7280;
   --card: #FFFFFF;
-  --card-foreground: #0F172A;
-  --border: #E2E8E5;
-  --input: #E2E8E5;
-  --ring: #047857;
+  --card-foreground: #111827;
+  --border: #E5E7EB;
+  --input: #E5E7EB;
+  --ring: #4F46E5;
   --radius: 10px;
   --font-sans: var(--font-plus-jakarta-sans), sans-serif;
 
+  /* Multi-Color Semantic System */
   --success: #059669;
   --success-foreground: #FFFFFF;
   --success-bg: #ECFDF5;
+  
   --warning: #D97706;
   --warning-foreground: #FFFFFF;
   --warning-bg: #FFFBEB;
+  
   --danger: #DC2626;
   --danger-foreground: #FFFFFF;
   --danger-bg: #FEF2F2;
+  
   --info: #0284C7;
   --info-bg: #F0F9FF;
 }
@@ -125,7 +136,7 @@
 
 @layer components {
   .btn-primary {
-    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold transition-all duration-150 hover:opacity-90 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed;
+    @apply inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-primary text-primary-foreground text-sm font-semibold transition-all duration-150 hover:opacity-90 active:scale-95 disabled:opacity-50 disabled:cursor-not-allowed shadow-sm;
   }
 
   .btn-secondary {
@@ -145,23 +156,23 @@
   }
 
   .badge-active {
-    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-success-bg text-success;
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-success-bg text-success border border-success;
   }
 
   .badge-closing-soon {
-    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-warning-bg text-warning;
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-warning-bg text-warning border border-warning;
   }
 
   .badge-closed {
-    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-muted text-muted-foreground;
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-muted text-muted-foreground border border-border;
   }
 
   .badge-cancelled {
-    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-danger-bg text-danger;
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-danger-bg text-danger border border-danger;
   }
 
   .badge-awarded {
-    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-secondary text-secondary-foreground;
+    @apply inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-secondary text-secondary-foreground border border-secondary;
   }
 
   .section-label {

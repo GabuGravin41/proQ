@@ -26,11 +26,11 @@ const AppLogo = memo(function AppLogo({
         xmlns="http://www.w3.org/2000/svg"
         className="shrink-0"
       >
-        <rect width="40" height="40" rx="10" fill="#047857" />
-        {/* Stylized TenQ Monogram with Radar Node */}
+        <rect width="40" height="40" rx="10" fill="#4F46E5" />
+        {/* Stylized TenQ Monogram with Gold Radar Node */}
         <circle cx="19" cy="18" r="8.5" stroke="#FFFFFF" strokeWidth="3.2" />
         <path d="M25 24.5L30.5 30" stroke="#FFFFFF" strokeWidth="3.5" strokeLinecap="round" />
-        <circle cx="19" cy="18" r="2.8" fill="#34D399" />
+        <circle cx="19" cy="18" r="2.8" fill="#F59E0B" />
       </svg>
     </div>
   );
