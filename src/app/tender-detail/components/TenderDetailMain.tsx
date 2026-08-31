@@ -131,14 +131,14 @@ export default function TenderDetailMain({ tender }: TenderDetailMainProps) {
 
   return (
     <div className="space-y-6">
-      {/* Horizontal Tab Bar */}
-      <div className="flex border-b border-border bg-card rounded-t-xl p-1 gap-1 overflow-x-auto scrollbar-none shadow-sm">
+      {/* Subtle Underlined Horizontal Tabs */}
+      <div className="flex border-b border-border gap-6 overflow-x-auto scrollbar-none px-1">
         <button
           onClick={() => setActiveTab('overview')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all shrink-0 ${
+          className={`flex items-center gap-2 py-3 text-xs font-bold transition-all shrink-0 border-b-2 -mb-px ${
             activeTab === 'overview'
-              ? 'bg-primary text-primary-foreground shadow-sm'
-              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
           }`}
         >
           <Layers size={14} />
@@ -147,10 +147,10 @@ export default function TenderDetailMain({ tender }: TenderDetailMainProps) {
 
         <button
           onClick={() => setActiveTab('boq')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all shrink-0 ${
+          className={`flex items-center gap-2 py-3 text-xs font-bold transition-all shrink-0 border-b-2 -mb-px ${
             activeTab === 'boq'
-              ? 'bg-primary text-primary-foreground shadow-sm'
-              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
           }`}
         >
           <FileSpreadsheet size={14} />
@@ -159,10 +159,10 @@ export default function TenderDetailMain({ tender }: TenderDetailMainProps) {
 
         <button
           onClick={() => setActiveTab('documents')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all shrink-0 ${
+          className={`flex items-center gap-2 py-3 text-xs font-bold transition-all shrink-0 border-b-2 -mb-px ${
             activeTab === 'documents'
-              ? 'bg-primary text-primary-foreground shadow-sm'
-              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
           }`}
         >
           <FileText size={14} />
@@ -171,10 +171,10 @@ export default function TenderDetailMain({ tender }: TenderDetailMainProps) {
 
         <button
           onClick={() => setActiveTab('timeline')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all shrink-0 ${
+          className={`flex items-center gap-2 py-3 text-xs font-bold transition-all shrink-0 border-b-2 -mb-px ${
             activeTab === 'timeline'
-              ? 'bg-primary text-primary-foreground shadow-sm'
-              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
           }`}
         >
           <Calendar size={14} />
@@ -183,10 +183,10 @@ export default function TenderDetailMain({ tender }: TenderDetailMainProps) {
 
         <button
           onClick={() => setActiveTab('compliance')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all shrink-0 ${
+          className={`flex items-center gap-2 py-3 text-xs font-bold transition-all shrink-0 border-b-2 -mb-px ${
             activeTab === 'compliance'
-              ? 'bg-primary text-primary-foreground shadow-sm'
-              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
           }`}
         >
           <ShieldCheck size={14} />

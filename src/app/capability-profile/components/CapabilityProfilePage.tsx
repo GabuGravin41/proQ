@@ -95,7 +95,7 @@ export default function CapabilityProfilePage() {
   };
 
   const handleSave = () => {
-    toast.success('Bidding capability profile saved! AI Match Radar updated.');
+    toast.success('Bidding preferences saved successfully!');
   };
 
   return (
@@ -103,24 +103,24 @@ export default function CapabilityProfilePage() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6">
         <div>
-          <h1 className="text-2xl font-extrabold text-foreground">AI Match Radar & Bidding Profile</h1>
+          <h1 className="text-2xl font-extrabold text-foreground">Bidding Preferences & Alerts</h1>
           <p className="text-xs text-muted-foreground mt-0.5">
-            Configure your target sectors, operating regions, and capacity to receive 07:00 AM WhatsApp alerts.
+            Choose your supply sectors, operating counties, and budget to receive tailored tender alerts.
           </p>
         </div>
         <button onClick={handleSave} className="btn-primary shrink-0 self-start sm:self-auto">
-          <Save size={15} /> Save Radar Settings
+          <Save size={15} /> Save Preferences
         </button>
       </div>
 
-      {/* Horizontal Tabs */}
-      <div className="flex border-b border-border bg-card rounded-t-xl p-1 gap-1 mb-6 overflow-x-auto scrollbar-none">
+      {/* Subtle Underlined Horizontal Tabs */}
+      <div className="flex border-b border-border gap-6 mb-6 overflow-x-auto scrollbar-none px-1">
         <button
           onClick={() => setActiveTab('sectors')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all shrink-0 ${
+          className={`flex items-center gap-2 py-3 text-xs font-bold transition-all shrink-0 border-b-2 -mb-px ${
             activeTab === 'sectors'
-              ? 'bg-primary text-primary-foreground shadow-sm'
-              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
           }`}
         >
           <Briefcase size={14} />
@@ -129,10 +129,10 @@ export default function CapabilityProfilePage() {
 
         <button
           onClick={() => setActiveTab('counties')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all shrink-0 ${
+          className={`flex items-center gap-2 py-3 text-xs font-bold transition-all shrink-0 border-b-2 -mb-px ${
             activeTab === 'counties'
-              ? 'bg-primary text-primary-foreground shadow-sm'
-              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
           }`}
         >
           <MapPin size={14} />
@@ -141,10 +141,10 @@ export default function CapabilityProfilePage() {
 
         <button
           onClick={() => setActiveTab('budget')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all shrink-0 ${
+          className={`flex items-center gap-2 py-3 text-xs font-bold transition-all shrink-0 border-b-2 -mb-px ${
             activeTab === 'budget'
-              ? 'bg-primary text-primary-foreground shadow-sm'
-              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+              ? 'border-primary text-primary'
+              : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
           }`}
         >
           <DollarSign size={14} />
