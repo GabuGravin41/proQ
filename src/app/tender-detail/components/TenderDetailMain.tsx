@@ -4,7 +4,13 @@ import { Tender } from '@/lib/tenderData';
 import TenderMatchScore from './TenderMatchScore';
 import TenderDocuments from './TenderDocuments';
 import TenderTimeline from './TenderTimeline';
-import { FileText, List, ChevronDown, ChevronUp, Download, Sparkles } from 'lucide-react';
+import PreBidRequirementsCard from './PreBidRequirementsCard';
+import ComplianceChecklist from './ComplianceChecklist';
+import {
+  FileText, List, ChevronDown, ChevronUp, Download, Sparkles,
+  Layers, FileSpreadsheet, Calendar, ShieldCheck, ExternalLink,
+  MapPin, Clock, Building2, Check
+} from 'lucide-react';
 import { toast } from 'sonner';
 
 interface TenderDetailMainProps {
@@ -16,10 +22,10 @@ function getBoqItemsForTender(tender: Tender) {
   const cat = tender.category.toLowerCase();
   const title = tender.title.toLowerCase();
 
-  // 1. Food & Catering Supplies (Mang'u High, Schools, Hospitals, Prisons)
+  // 1. Food & Catering Supplies
   if (cat.includes('food') || title.includes('maize') || title.includes('rice') || title.includes('foodstuff')) {
     return [
-      { id: 'boq-001', item: 'Grade 1 Dry White Maize (Clean, moisture < 13.5%)', qty: 500, unit: '90kg Bags', unitRate: 'KES 3,800' },
+      { id: 'boq-001', item: 'Grade 1 Dry White Maize (Moisture < 13.5%, sorted)', qty: 500, unit: '90kg Bags', unitRate: 'KES 3,800' },
       { id: 'boq-002', item: 'Grade A Pishori Long Grain Pure Rice', qty: 350, unit: '50kg Bags', unitRate: 'KES 7,200' },
       { id: 'boq-003', item: 'Refined Fortified Vegetable Cooking Oil', qty: 150, unit: '20L Jerrycans', unitRate: 'KES 5,400' },
       { id: 'boq-004', item: 'Grade A Wairimu Dry Beans (Sorted & Cleaned)', qty: 250, unit: '90kg Bags', unitRate: 'KES 11,500' },
@@ -28,7 +34,7 @@ function getBoqItemsForTender(tender: Tender) {
     ];
   }
 
-  // 2. Textiles, Uniforms & Apparel
+  // 2. Textiles & Uniforms
   if (cat.includes('textile') || cat.includes('apparel') || title.includes('uniform')) {
     return [
       { id: 'boq-001', item: 'Navy Blue Polyester-Wool Tailored Skirts / Trousers', qty: 1800, unit: 'Pairs', unitRate: 'KES 1,850' },
@@ -39,7 +45,7 @@ function getBoqItemsForTender(tender: Tender) {
     ];
   }
 
-  // 3. Cleaning & Janitorial Services (Kenyatta University, SGR, KPA)
+  // 3. Cleaning & Janitorial Services
   if (cat.includes('cleaning') || cat.includes('janitorial') || title.includes('sanitation')) {
     return [
       { id: 'boq-001', item: 'Commercial Walk-Behind Rotary Floor Scrubber & Polisher', qty: 8, unit: 'Machines', unitRate: 'KES 380,000' },
@@ -50,7 +56,7 @@ function getBoqItemsForTender(tender: Tender) {
     ];
   }
 
-  // 4. Consultancy & Advisory (Actuarial, Cybersecurity, Risk Assessment)
+  // 4. Consultancy & Advisory
   if (cat.includes('consultancy') || cat.includes('advisory') || title.includes('actuarial') || title.includes('proposal')) {
     return [
       { id: 'boq-001', item: 'Lead Actuary & Senior Healthcare Risk Modeler', qty: 240, unit: 'Consulting Hours', unitRate: 'KES 28,000' },
@@ -60,185 +66,228 @@ function getBoqItemsForTender(tender: Tender) {
     ];
   }
 
-  // 5. Water & Solar Pumping (Turkana, Garissa, Kajiado, Counties)
-  if (cat.includes('water') || title.includes('solar') || title.includes('borehole') || title.includes('pump')) {
+  // 5. Water, Solar & Boreholes
+  if (cat.includes('water') || cat.includes('solar') || title.includes('borehole') || title.includes('pump') || title.includes('irrigation')) {
     return [
-      { id: 'boq-001', item: 'High-Efficiency Submersible Solar Pump — 7.5kW, 45m Head', qty: 14, unit: 'Units', unitRate: 'KES 420,000' },
-      { id: 'boq-002', item: 'Monocrystalline Solar PV Panels — 550W Tier 1', qty: 560, unit: 'Pieces', unitRate: 'KES 24,500' },
-      { id: 'boq-003', item: 'Solar Pump Inverter / Controller with MPPT & GSM Telemetry', qty: 14, unit: 'Units', unitRate: 'KES 185,000' },
-      { id: 'boq-004', item: 'HDPE Water Transmission Pipes — PN10, 90mm dia', qty: 14000, unit: 'Meters', unitRate: 'KES 680' },
-      { id: 'boq-005', item: 'Elevated Steel Water Tank — 50,000 Litres on 12m Tower', qty: 14, unit: 'Structures', unitRate: 'KES 1,850,000' },
+      { id: 'boq-001', item: 'Deep Well Hydrogeological Geophysical Survey & Report', qty: 1, unit: 'Site Survey', unitRate: 'KES 280,000' },
+      { id: 'boq-002', item: 'Borehole Mud-Rotary Drilling to 250m Depth (8-Inch Diameter)', qty: 250, unit: 'Linear Metres', unitRate: 'KES 8,500' },
+      { id: 'boq-003', item: 'High-Efficiency Helical Rotor Solar Submersible Pump (15kW)', qty: 1, unit: 'Complete Unit', unitRate: 'KES 1,250,000' },
+      { id: 'boq-004', item: 'Monocrystalline Solar PV Modules (550W Tier 1) & Mounting Rig', qty: 36, unit: 'Panels', unitRate: 'KES 24,000' },
+      { id: 'boq-005', item: '100,000L Elevated Cylindrical Pressed Steel Water Storage Tank', qty: 1, unit: 'Complete Tank', unitRate: 'KES 3,800,000' },
+      { id: 'boq-006', item: 'HDPE PN16 Distribution Piping (90mm OD) & Trench Excavation', qty: 4200, unit: 'Metres', unitRate: 'KES 980' },
     ];
   }
 
-  // 6. Healthcare & Medical Equipment (KEMSA, KU Health, Hospitals)
-  if (cat.includes('medical') || cat.includes('health') || title.includes('medicine') || title.includes('hospital')) {
+  // 6. Roads & Civil Infrastructure
+  if (cat.includes('road') || cat.includes('infrastructure') || cat.includes('construction') || title.includes('asphalt') || title.includes('paving') || title.includes('highway')) {
     return [
-      { id: 'boq-001', item: 'Multi-Parameter Patient Monitor — 6 Parameter (ECG/SpO2/NIBP)', qty: 45, unit: 'Units', unitRate: 'KES 285,000' },
-      { id: 'boq-002', item: 'Ophthalmic Phacoemulsification System & Operating Microscope', qty: 1, unit: 'Complete Unit', unitRate: 'KES 18,500,000' },
-      { id: 'boq-003', item: 'Sterile Surgical Gloves (Latex Powder-Free Size 7.5)', qty: 8000, unit: 'Pairs', unitRate: 'KES 85' },
-      { id: 'boq-004', item: 'Digital Ultrasound Diagnostic Scanner with 3 Probes', qty: 4, unit: 'Units', unitRate: 'KES 4,200,000' },
-      { id: 'boq-005', item: 'Intravenous Cannula 18G/20G with Injection Port', qty: 25000, unit: 'Pieces', unitRate: 'KES 42' },
+      { id: 'boq-001', item: 'Site Clearance, Topsoil Stripping & Bush Removal (depth 200mm)', qty: 18500, unit: 'Square Metres', unitRate: 'KES 140' },
+      { id: 'boq-002', item: 'Heavy Earthworks Excavation in Normal Material to Spoil', qty: 12400, unit: 'Cubic Metres', unitRate: 'KES 480' },
+      { id: 'boq-003', item: 'Dense Bituminous Macadam (DBM) Base Course Layer (100mm)', qty: 3800, unit: 'Cubic Metres', unitRate: 'KES 18,500' },
+      { id: 'boq-004', item: 'Asphalt Concrete Wearing Course (AC Type 1 - 50mm thick)', qty: 24000, unit: 'Square Metres', unitRate: 'KES 1,450' },
+      { id: 'boq-005', item: 'Precast Concrete Class 25/20 Kerbs & Side Drainage Channels', qty: 6200, unit: 'Linear Metres', unitRate: 'KES 2,200' },
+      { id: 'boq-006', item: 'Thermoplastic Retroreflective Road Marking & Road Furniture', qty: 1, unit: 'Lump Sum', unitRate: 'KES 2,800,000' },
     ];
   }
 
-  // 7. Roads, Civil Works & Infrastructure (KeNHA, KURA, County Classrooms)
-  if (cat.includes('road') || cat.includes('infrastructure') || cat.includes('construction') || title.includes('civil') || title.includes('classroom')) {
+  // 7. Medical & Surgical Supplies
+  if (cat.includes('medical') || cat.includes('health') || cat.includes('hospital') || title.includes('pharmaceutical') || title.includes('surgical')) {
     return [
-      { id: 'boq-001', item: 'Asphalt Concrete Surfacing — 50mm compacted thickness', qty: 35000, unit: 'Sq Meters', unitRate: 'KES 1,250' },
-      { id: 'boq-002', item: 'Dense Bitumen Macadam (DBM) Road Base — 80mm thickness', qty: 35000, unit: 'Sq Meters', unitRate: 'KES 1,850' },
-      { id: 'boq-003', item: 'Reinforced Concrete Pipe Culverts — 900mm diameter', qty: 650, unit: 'Meters', unitRate: 'KES 14,000' },
-      { id: 'boq-004', item: 'Machine Cut Stone Walling & Reinforced Concrete Ring Beams', qty: 2400, unit: 'Sq Meters', unitRate: 'KES 2,200' },
-      { id: 'boq-005', item: 'Thermoplastic Retro-Reflective Road Marking (Yellow & White)', qty: 6500, unit: 'Sq Meters', unitRate: 'KES 950' },
+      { id: 'boq-001', item: 'Digital Multi-Parameter ICU Patient Monitor (ECG, SpO2, NIBP)', qty: 12, unit: 'Units', unitRate: 'KES 480,000' },
+      { id: 'boq-002', item: 'Sterile Disposable Surgical Gloves (Latex-Free Powdered)', qty: 500, unit: 'Boxes of 100', unitRate: 'KES 2,400' },
+      { id: 'boq-003', item: 'Heavy-Duty Electric Multi-Position Hydraulic Operating Table', qty: 2, unit: 'Units', unitRate: 'KES 2,900,000' },
+      { id: 'boq-004', item: 'Anaesthesia Workstation with Integrated Ventilator & Vaporizer', qty: 2, unit: 'Workstations', unitRate: 'KES 4,800,000' },
+      { id: 'boq-005', item: 'High-Volume Medical Oxygen Cylinders (F-Type 6.8m3 Filled)', qty: 80, unit: 'Cylinders', unitRate: 'KES 38,000' },
     ];
   }
 
-  // 8. Education & Laboratory Science (Alliance High, Schools)
-  if (cat.includes('education') || title.includes('laboratory') || title.includes('reagents')) {
-    return [
-      { id: 'boq-001', item: 'Analytical Reagent Grade Hydrochloric Acid (37% HCl, 2.5L)', qty: 80, unit: 'Winchesters', unitRate: 'KES 3,200' },
-      { id: 'boq-002', item: 'Pyrex Borosilicate Glass Conical Flasks & Beakers (250ml)', qty: 600, unit: 'Pieces', unitRate: 'KES 480' },
-      { id: 'boq-003', item: 'Compound LED Monocular Student Microscope (1000x)', qty: 45, unit: 'Units', unitRate: 'KES 34,000' },
-      { id: 'boq-004', item: 'Digital Analytical Electronic Laboratory Balance (0.001g)', qty: 12, unit: 'Units', unitRate: 'KES 42,000' },
-      { id: 'boq-005', item: 'Biology Dissecting Kit & Preserved Specimen Slide Sets', qty: 150, unit: 'Sets', unitRate: 'KES 2,400' },
-    ];
-  }
-
-  // 9. Energy & Power Utilities (KPLC, KETRACO, KPC)
-  if (cat.includes('energy') || cat.includes('renewables') || title.includes('pole') || title.includes('insulator')) {
-    return [
-      { id: 'boq-001', item: '10-Metre Reinforced Spun Concrete Utility Poles (KS 1933)', qty: 12000, unit: 'Poles', unitRate: 'KES 14,500' },
-      { id: 'boq-002', item: '220kV High-Voltage Silicone Composite Insulators', qty: 6000, unit: 'Units', unitRate: 'KES 18,500' },
-      { id: 'boq-003', item: '48-Core Optical Ground Wire (OPGW) Cable', qty: 45000, unit: 'Meters', unitRate: 'KES 1,150' },
-      { id: 'boq-004', item: 'Custody Transfer Multi-Path Ultrasonic Flow Meter (12-inch)', qty: 4, unit: 'Units', unitRate: 'KES 8,500,000' },
-    ];
-  }
-
-  // 10. Default ICT & Security (KRA, KAA, CAK)
+  // Default: Enterprise ICT / Equipment
   return [
-    { id: 'boq-001', item: 'Enterprise Core SD-WAN Gateway Router with Dual Power', qty: 6, unit: 'Units', unitRate: 'KES 2,400,000' },
-    { id: 'boq-002', item: 'Next-Generation Firewall Appliance (50 Gbps Threat Protection)', qty: 4, unit: 'Units', unitRate: 'KES 4,800,000' },
-    { id: 'boq-003', item: '48-Port Gigabit Layer 3 Managed PoE+ Network Switch', qty: 32, unit: 'Units', unitRate: 'KES 185,000' },
-    { id: 'boq-004', item: 'Online 10KVA Modular UPS with 4-Hour Battery Bank', qty: 8, unit: 'Units', unitRate: 'KES 450,000' },
+    { id: 'boq-001', item: 'Enterprise Rack-Mount Server (32-Core, 128GB RAM, 8TB NVMe)', qty: 4, unit: 'Units', unitRate: 'KES 980,000' },
+    { id: 'boq-002', item: 'Managed 48-Port Gigabit PoE+ Core Network Switch (Layer 3)', qty: 6, unit: 'Switches', unitRate: 'KES 320,000' },
+    { id: 'boq-003', item: 'High-Definition Dome IP Surveillance Camera (4K Night Vision)', qty: 32, unit: 'Units', unitRate: 'KES 38,000' },
+    { id: 'boq-004', item: 'Cat6A F/UTP Low-Smoke Zero-Halogen Structured Cabling (305m)', qty: 24, unit: 'Boxes', unitRate: 'KES 19,500' },
+    { id: 'boq-005', item: 'Online Double-Conversion 20kVA Modular Smart UPS System', qty: 1, unit: 'System', unitRate: 'KES 1,850,000' },
   ];
 }
 
 export default function TenderDetailMain({ tender }: TenderDetailMainProps) {
-  const [boqExpanded, setBoqExpanded] = useState(false);
+  const [activeTab, setActiveTab] = useState<'overview' | 'boq' | 'documents' | 'timeline' | 'compliance'>('overview');
   const boqItems = getBoqItemsForTender(tender);
-  const visibleBoq = boqExpanded ? boqItems : boqItems.slice(0, 4);
 
-  const exportBoqCSV = () => {
-    const headers = 'Item ID,Item Description,Quantity,Unit,Unit Rate\n';
-    const rows = boqItems
-      .map(i => `"${i.id}","${i.item.replace(/"/g, '""')}",${i.qty},"${i.unit}","${i.unitRate}"`)
-      .join('\n');
-    const blob = new Blob([headers + rows], { type: 'text/csv;charset=utf-8;' });
+  const handleExportBoq = () => {
+    const csvHeader = 'Item ID,Description / Specification,Quantity,Unit of Measure,Benchmark Unit Rate\n';
+    const csvRows = boqItems.map(b => `"${b.id}","${b.item}",${b.qty},"${b.unit}","${b.unitRate}"`).join('\n');
+    const blob = new Blob([csvHeader + csvRows], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
-    link.href = url;
-    link.download = `BOQ_${tender.referenceNumber.replace(/[\/\\]/g, '_')}.csv`;
+    link.setAttribute('href', url);
+    link.setAttribute('download', `TenQ_BOQ_${tender.referenceNumber.replace(/[^a-zA-Z0-9]/g, '_')}.csv`);
+    document.body.appendChild(link);
     link.click();
-    URL.revokeObjectURL(url);
-    toast.success('BOQ line items exported to CSV');
+    document.body.removeChild(link);
+    toast.success('Bill of Quantities (BOQ) exported to CSV!');
   };
 
   return (
-    <div className="space-y-5">
-      {/* Match Score (mobile only, visible on sidebar on desktop) */}
-      <div className="xl:hidden">
-        <TenderMatchScore tender={tender} />
+    <div className="space-y-6">
+      {/* Horizontal Tab Bar */}
+      <div className="flex border-b border-border bg-card rounded-t-xl p-1 gap-1 overflow-x-auto scrollbar-none shadow-sm">
+        <button
+          onClick={() => setActiveTab('overview')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all shrink-0 ${
+            activeTab === 'overview'
+              ? 'bg-primary text-primary-foreground shadow-sm'
+              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+          }`}
+        >
+          <Layers size={14} />
+          1. Scope & Financials
+        </button>
+
+        <button
+          onClick={() => setActiveTab('boq')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all shrink-0 ${
+            activeTab === 'boq'
+              ? 'bg-primary text-primary-foreground shadow-sm'
+              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+          }`}
+        >
+          <FileSpreadsheet size={14} />
+          2. Bill of Quantities ({boqItems.length})
+        </button>
+
+        <button
+          onClick={() => setActiveTab('documents')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all shrink-0 ${
+            activeTab === 'documents'
+              ? 'bg-primary text-primary-foreground shadow-sm'
+              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+          }`}
+        >
+          <FileText size={14} />
+          3. Documents & Portals
+        </button>
+
+        <button
+          onClick={() => setActiveTab('timeline')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all shrink-0 ${
+            activeTab === 'timeline'
+              ? 'bg-primary text-primary-foreground shadow-sm'
+              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+          }`}
+        >
+          <Calendar size={14} />
+          4. Procurement Milestones
+        </button>
+
+        <button
+          onClick={() => setActiveTab('compliance')}
+          className={`flex items-center gap-2 px-4 py-2.5 rounded-lg text-xs font-bold transition-all shrink-0 ${
+            activeTab === 'compliance'
+              ? 'bg-primary text-primary-foreground shadow-sm'
+              : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+          }`}
+        >
+          <ShieldCheck size={14} />
+          5. Pre-Bid Checklist
+        </button>
       </div>
 
-      {/* Description */}
-      <div className="card p-5">
-        <h2 className="text-base font-bold text-foreground mb-3 flex items-center gap-2">
-          <FileText size={16} className="text-primary" />
-          Tender Description & Scope of Work
-        </h2>
-        <p className="text-sm text-foreground/80 leading-relaxed">
-          {tender.description}
-        </p>
-        <div className="mt-4 p-3 rounded-lg bg-secondary/50 border border-primary/20 flex items-start gap-2">
-          <Sparkles size={14} className="text-primary shrink-0 mt-0.5" />
-          <div className="min-w-0">
-            <p className="text-xs font-semibold text-primary">OCDS Procurement Fingerprint</p>
-            <p className="text-xs font-mono text-muted-foreground break-all">
-              ocds-6b5mus-{tender.referenceNumber.toLowerCase().replace(/[\/\s]/g, '-')} · Verified Source: {tender.source}
-            </p>
-          </div>
-        </div>
-      </div>
+      {/* Tab 1: Overview & Scope */}
+      {activeTab === 'overview' && (
+        <div className="space-y-6 animate-fade-in">
+          {/* Pre-Bid Financials & Statutory Card */}
+          <PreBidRequirementsCard tender={tender} />
 
-      {/* BOQ Extract */}
-      <div className="card p-5">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 mb-4">
-          <div>
+          {/* Scope of Work */}
+          <div className="card p-6 space-y-4">
             <h2 className="text-base font-bold text-foreground flex items-center gap-2">
-              <List size={16} className="text-primary" />
-              Bill of Quantities (BOQ) Extract
+              <FileText size={18} className="text-primary" />
+              Scope of Procurement & Technical Objectives
             </h2>
-            <p className="text-xs text-muted-foreground mt-0.5">
-              AI-parsed from official procurement specifications for {tender.category}
+            <p className="text-sm text-foreground/80 leading-relaxed">
+              The <strong>{tender.procuringEntity}</strong> invites sealed competitive bids from eligible and qualified contractors/suppliers for the{' '}
+              <strong>{tender.title}</strong> under tender reference <strong>{tender.referenceNumber}</strong>.
+            </p>
+            <p className="text-xs text-muted-foreground leading-relaxed">
+              Bidding will be conducted in strict accordance with the Public Procurement and Asset Disposal Act (PPADA 2015) and Public Procurement Regulations 2020.
+              Interested bidders must download the standard tender documents and ensure compliance with all statutory and preliminary requirements.
             </p>
           </div>
 
-          <button
-            onClick={exportBoqCSV}
-            className="btn-secondary text-xs py-1.5 px-3 self-start sm:self-auto gap-1.5"
-            title="Download BOQ as CSV"
-          >
-            <Download size={13} />
-            Export CSV
-          </button>
+          {/* AI Match Fit Summary */}
+          <TenderMatchScore tender={tender} />
         </div>
+      )}
 
-        <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="border-b border-border">
-                <th className="text-left py-2 pr-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Item Description</th>
-                <th className="text-right py-2 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">Qty</th>
-                <th className="text-left py-2 px-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider">Unit</th>
-                <th className="text-right py-2 pl-3 text-xs font-semibold text-muted-foreground uppercase tracking-wider whitespace-nowrap">Est. Unit Rate</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-border">
-              {visibleBoq.map((item) => (
-                <tr key={item.id} className="hover:bg-muted/40 transition-colors">
-                  <td className="py-2.5 pr-3 text-sm text-foreground/90 font-medium">{item.item}</td>
-                  <td className="py-2.5 px-3 text-sm font-tabular text-right text-foreground font-semibold">{item.qty.toLocaleString()}</td>
-                  <td className="py-2.5 px-3 text-sm text-muted-foreground">{item.unit}</td>
-                  <td className="py-2.5 pl-3 text-sm font-tabular text-right text-primary font-bold whitespace-nowrap">{item.unitRate}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
+      {/* Tab 2: Bill of Quantities (BOQ) */}
+      {activeTab === 'boq' && (
+        <div className="space-y-4 animate-fade-in">
+          <div className="card p-6">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-4 border-b border-border">
+              <div>
+                <h2 className="text-base font-bold text-foreground flex items-center gap-2">
+                  <FileSpreadsheet size={18} className="text-primary" />
+                  Pre-Extracted Bill of Quantities (BOQ) Schedule
+                </h2>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Structured line-item quantities for estimating and pricing takeoff.
+                </p>
+              </div>
+              <button onClick={handleExportBoq} className="btn-primary text-xs shrink-0 self-start sm:self-auto">
+                <Download size={14} /> Export BOQ (CSV / Excel)
+              </button>
+            </div>
+
+            <div className="overflow-x-auto">
+              <table className="w-full text-xs">
+                <thead>
+                  <tr className="border-b border-border bg-muted/50 text-muted-foreground">
+                    <th className="text-left py-2.5 px-3 font-semibold w-16">Item #</th>
+                    <th className="text-left py-2.5 px-3 font-semibold">Description / Specification</th>
+                    <th className="text-right py-2.5 px-3 font-semibold w-24">Est. Qty</th>
+                    <th className="text-left py-2.5 px-3 font-semibold w-28">Unit</th>
+                    <th className="text-right py-2.5 px-3 font-semibold w-32">Market Benchmark</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-border">
+                  {boqItems.map((item, idx) => (
+                    <tr key={item.id} className="hover:bg-muted/30 transition-colors">
+                      <td className="py-3 px-3 font-mono text-muted-foreground">{idx + 1}</td>
+                      <td className="py-3 px-3 font-medium text-foreground">{item.item}</td>
+                      <td className="py-3 px-3 text-right font-bold font-tabular text-primary">{item.qty.toLocaleString()}</td>
+                      <td className="py-3 px-3 text-muted-foreground">{item.unit}</td>
+                      <td className="py-3 px-3 text-right font-mono font-bold text-foreground">{item.unitRate}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
+      )}
 
-        {boqItems.length > 4 && (
-          <button
-            onClick={() => setBoqExpanded(!boqExpanded)}
-            className="mt-3 flex items-center gap-1.5 text-xs font-medium text-primary hover:underline"
-          >
-            {boqExpanded ? (
-              <><ChevronUp size={13} /> Show fewer items</>
-            ) : (
-              <><ChevronDown size={13} /> Show all {boqItems.length} line items</>
-            )}
-          </button>
-        )}
+      {/* Tab 3: Documents & Links */}
+      {activeTab === 'documents' && (
+        <div className="animate-fade-in">
+          <TenderDocuments tender={tender} />
+        </div>
+      )}
 
-        <p className="mt-3 text-xs text-muted-foreground">
-          BOQ extracted via TenderIQ Parser. Always cross-check with original procuring entity tender documents prior to bid submission.
-        </p>
-      </div>
+      {/* Tab 4: Procurement Timeline */}
+      {activeTab === 'timeline' && (
+        <div className="animate-fade-in">
+          <TenderTimeline tender={tender} />
+        </div>
+      )}
 
-      {/* Documents & Procurement Timeline Side-by-Side to eliminate empty space */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-5">
-        <TenderDocuments tender={tender} />
-        <TenderTimeline tender={tender} />
-      </div>
+      {/* Tab 5: Pre-Bid Compliance Checklist */}
+      {activeTab === 'compliance' && (
+        <div className="animate-fade-in">
+          <ComplianceChecklist tender={tender} />
+        </div>
+      )}
     </div>
   );
 }
