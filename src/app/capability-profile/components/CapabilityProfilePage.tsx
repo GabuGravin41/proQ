@@ -350,7 +350,7 @@ export default function CapabilityProfilePage() {
                 </h3>
                 <button
                   onClick={() => setSelectedCounties([])}
-                  className="text-xs text-sky-600 hover:underline font-semibold"
+                  className="text-xs text-primary hover:underline font-semibold"
                 >
                   Clear All
                 </button>
@@ -365,7 +365,7 @@ export default function CapabilityProfilePage() {
                       onClick={() => toggleCounty(county)}
                       className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all border ${
                         isSelected
-                          ? 'bg-sky-500 text-white border-sky-500 shadow-sm hover:bg-sky-600'
+                          ? 'bg-primary text-primary-foreground border-primary shadow-sm hover:opacity-90'
                           : 'bg-card text-foreground border-border hover:bg-muted'
                       }`}
                     >
@@ -402,7 +402,7 @@ export default function CapabilityProfilePage() {
                   }}
                   className={`p-3.5 rounded-xl border text-left text-xs font-semibold transition-all flex items-center justify-between ${
                     minBudget === preset.min && maxBudget === preset.max
-                      ? 'border-sky-500 bg-sky-50 text-sky-950 ring-1 ring-sky-400 dark:bg-sky-950/40 dark:text-sky-200 dark:border-sky-500'
+                      ? 'border-primary bg-secondary text-secondary-foreground ring-1 ring-primary'
                       : 'border-border bg-card hover:bg-muted text-foreground'
                   }`}
                 >
