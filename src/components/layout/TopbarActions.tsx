@@ -132,7 +132,7 @@ export default function TopbarActions() {
           />
           <div className="absolute top-0 right-0 h-full w-72 bg-card border-l border-border shadow-modal animate-slide-up flex flex-col p-6 gap-2">
             <div className="flex items-center justify-between mb-4">
-              <span className="font-bold text-lg text-primary">TenderIQ</span>
+              <span className="font-extrabold text-xl text-primary">TenQ</span>
               <button onClick={() => setMobileOpen(false)} className="p-1.5 rounded-md hover:bg-muted">
                 <X size={18} />
               </button>

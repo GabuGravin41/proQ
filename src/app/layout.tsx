@@ -11,8 +11,8 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'TenderIQ Kenya | Public Procurement Intelligence & AI Radar',
-  description: 'Search, discover, and get personalized AI notifications for public procurement tenders across Kenya (e-GP, PPIP, counties, and institutions).',
+  title: 'TenQ Kenya | Public Procurement Intelligence & AI Radar',
+  description: 'Search, discover, and receive instant 07:00 AM WhatsApp alerts for public procurement tenders across all 47 counties in Kenya.',
 };
 
 export default function RootLayout({

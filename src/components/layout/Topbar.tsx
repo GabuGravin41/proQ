@@ -4,6 +4,7 @@ import AppLogo from '@/components/ui/AppLogo';
 import TopbarActions from './TopbarActions';
 
 const publicNavLinks = [
+  { label: 'Overview', href: '/landing' },
   { label: 'Tender Search', href: '/' },
   { label: 'Pricing', href: '/pricing' },
 ];
@@ -15,10 +16,10 @@ export default function Topbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
           <AppLogo size={36} />
-          <span className="font-extrabold text-xl tracking-tight text-primary hidden sm:block">
-            TenderIQ
+          <span className="font-extrabold text-2xl tracking-tight text-primary">
+            TenQ
           </span>
-          <span className="hidden lg:inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-accent text-accent-foreground ml-1">
+          <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-accent text-accent-foreground ml-1">
             Kenya
           </span>
         </Link>
