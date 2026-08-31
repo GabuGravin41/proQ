@@ -122,7 +122,7 @@ export default function TenderDetailMain({ tender }: TenderDetailMainProps) {
     const url = URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.setAttribute('href', url);
-    link.setAttribute('download', `TenQ_BOQ_${tender.referenceNumber.replace(/[^a-zA-Z0-9]/g, '_')}.csv`);
+    link.setAttribute('download', `proQ_BOQ_${tender.referenceNumber.replace(/[^a-zA-Z0-9]/g, '_')}.csv`);
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);

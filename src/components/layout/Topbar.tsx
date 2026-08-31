@@ -16,8 +16,8 @@ export default function Topbar() {
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2.5 shrink-0">
           <AppLogo size={36} />
-          <span className="font-extrabold text-2xl tracking-tight text-primary">
-            TenQ
+          <span className="font-extrabold text-2xl tracking-tight text-foreground">
+            pro<span className="text-primary">Q</span>
           </span>
           <span className="hidden sm:inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold bg-accent text-accent-foreground ml-1">
             Kenya

@@ -239,7 +239,7 @@ export default function CapabilityProfilePage() {
             <div className="mb-4">
               <h2 className="text-sm font-bold text-foreground">Select Your Core Supply Sectors</h2>
               <p className="text-xs text-muted-foreground">
-                Click any sector to toggle on/off. TenQ will automatically match relevant procurement notices.
+                Click any sector to toggle on/off. proQ will automatically match relevant procurement notices.
               </p>
             </div>
 

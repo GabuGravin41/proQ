@@ -46,7 +46,7 @@ export default function LandingPage() {
           </h1>
 
           <p className="text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto mb-10 leading-relaxed">
-            TenQ continuously tracks and verifies notices from PPIP, e-GP Kenya, county governments, and parastatals — delivering instant 07:00 AM WhatsApp alerts and pre-extracted BOQs straight to your team.
+            proQ continuously tracks and verifies notices from PPIP, e-GP Kenya, county governments, and parastatals — delivering instant 07:00 AM WhatsApp alerts and pre-extracted BOQs straight to your team.
           </p>
 
           {/* Interactive Search Bar */}
@@ -158,7 +158,7 @@ export default function LandingPage() {
         <div className="max-w-4xl mx-auto px-4">
           <h2 className="text-3xl font-extrabold mb-4">Start Discovering Kenya&apos;s Public Tenders Today</h2>
           <p className="text-white/80 max-w-xl mx-auto text-sm mb-8">
-            Join Kenyan contractors and suppliers using TenQ to stay ahead of tender closing deadlines.
+            Join Kenyan contractors and suppliers using proQ to stay ahead of tender closing deadlines.
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
             <Link href="/" className="bg-white text-primary font-bold px-6 py-3 rounded-xl hover:bg-white/90 transition-all text-sm">

@@ -11,7 +11,7 @@ const plusJakartaSans = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: 'TenQ Kenya | Public Procurement Intelligence & AI Radar',
+  title: 'proQ Kenya | Public Procurement Intelligence & AI Bidding Platform',
   description: 'Search, discover, and receive instant 07:00 AM WhatsApp alerts for public procurement tenders across all 47 counties in Kenya.',
 };
 
