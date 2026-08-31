@@ -137,7 +137,7 @@ export default function TenderDetailMain({ tender }: TenderDetailMainProps) {
           onClick={() => setActiveTab('overview')}
           className={`flex items-center gap-2 py-3 text-xs font-bold transition-all shrink-0 border-b-2 -mb-px ${
             activeTab === 'overview'
-              ? 'border-primary text-primary'
+              ? 'border-emerald-600 text-emerald-700 dark:border-emerald-400 dark:text-emerald-400'
               : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
           }`}
         >
@@ -149,7 +149,7 @@ export default function TenderDetailMain({ tender }: TenderDetailMainProps) {
           onClick={() => setActiveTab('boq')}
           className={`flex items-center gap-2 py-3 text-xs font-bold transition-all shrink-0 border-b-2 -mb-px ${
             activeTab === 'boq'
-              ? 'border-primary text-primary'
+              ? 'border-emerald-600 text-emerald-700 dark:border-emerald-400 dark:text-emerald-400'
               : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
           }`}
         >
@@ -161,7 +161,7 @@ export default function TenderDetailMain({ tender }: TenderDetailMainProps) {
           onClick={() => setActiveTab('documents')}
           className={`flex items-center gap-2 py-3 text-xs font-bold transition-all shrink-0 border-b-2 -mb-px ${
             activeTab === 'documents'
-              ? 'border-primary text-primary'
+              ? 'border-emerald-600 text-emerald-700 dark:border-emerald-400 dark:text-emerald-400'
               : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
           }`}
         >
@@ -173,7 +173,7 @@ export default function TenderDetailMain({ tender }: TenderDetailMainProps) {
           onClick={() => setActiveTab('timeline')}
           className={`flex items-center gap-2 py-3 text-xs font-bold transition-all shrink-0 border-b-2 -mb-px ${
             activeTab === 'timeline'
-              ? 'border-primary text-primary'
+              ? 'border-emerald-600 text-emerald-700 dark:border-emerald-400 dark:text-emerald-400'
               : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
           }`}
         >
@@ -185,7 +185,7 @@ export default function TenderDetailMain({ tender }: TenderDetailMainProps) {
           onClick={() => setActiveTab('compliance')}
           className={`flex items-center gap-2 py-3 text-xs font-bold transition-all shrink-0 border-b-2 -mb-px ${
             activeTab === 'compliance'
-              ? 'border-primary text-primary'
+              ? 'border-emerald-600 text-emerald-700 dark:border-emerald-400 dark:text-emerald-400'
               : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
           }`}
         >

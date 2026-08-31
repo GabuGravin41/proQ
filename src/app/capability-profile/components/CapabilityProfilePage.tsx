@@ -16,7 +16,8 @@ const PREDEFINED_SECTORS = [
     icon: HardHat,
     desc: 'Paving, culverts, earthworks, bridges',
     colorClasses: 'text-amber-700 bg-amber-50 border-amber-300 dark:bg-amber-950/30 dark:text-amber-300 dark:border-amber-700',
-    activeBg: 'bg-amber-600 text-white border-amber-600',
+    selectedBorder: 'border-amber-500 ring-1 ring-amber-500/20 bg-amber-50/10',
+    checkBg: 'bg-amber-600 text-white',
   },
   {
     id: 'water',
@@ -24,7 +25,8 @@ const PREDEFINED_SECTORS = [
     icon: Droplets,
     desc: 'Pumps, pipelines, drilling, irrigation',
     colorClasses: 'text-sky-700 bg-sky-50 border-sky-300 dark:bg-sky-950/30 dark:text-sky-300 dark:border-sky-700',
-    activeBg: 'bg-sky-600 text-white border-sky-600',
+    selectedBorder: 'border-sky-500 ring-1 ring-sky-500/20 bg-sky-50/10',
+    checkBg: 'bg-sky-600 text-white',
   },
   {
     id: 'health',
@@ -32,7 +34,8 @@ const PREDEFINED_SECTORS = [
     icon: Stethoscope,
     desc: 'Pharmaceuticals, surgical gear, PPE',
     colorClasses: 'text-emerald-700 bg-emerald-50 border-emerald-300 dark:bg-emerald-950/30 dark:text-emerald-300 dark:border-emerald-700',
-    activeBg: 'bg-emerald-600 text-white border-emerald-600',
+    selectedBorder: 'border-emerald-500 ring-1 ring-emerald-500/20 bg-emerald-50/10',
+    checkBg: 'bg-emerald-600 text-white',
   },
   {
     id: 'ict',
@@ -40,7 +43,8 @@ const PREDEFINED_SECTORS = [
     icon: Laptop,
     desc: 'Software, networking, hardware, CCTV',
     colorClasses: 'text-indigo-700 bg-indigo-50 border-indigo-300 dark:bg-indigo-950/30 dark:text-indigo-300 dark:border-indigo-700',
-    activeBg: 'bg-indigo-600 text-white border-indigo-600',
+    selectedBorder: 'border-indigo-500 ring-1 ring-indigo-500/20 bg-indigo-50/10',
+    checkBg: 'bg-indigo-600 text-white',
   },
   {
     id: 'agriculture',
@@ -48,7 +52,8 @@ const PREDEFINED_SECTORS = [
     icon: Wheat,
     desc: 'Fertilizers, seeds, farm machinery',
     colorClasses: 'text-lime-800 bg-lime-50 border-lime-300 dark:bg-lime-950/30 dark:text-lime-300 dark:border-lime-700',
-    activeBg: 'bg-lime-700 text-white border-lime-700',
+    selectedBorder: 'border-lime-600 ring-1 ring-lime-600/20 bg-lime-50/10',
+    checkBg: 'bg-lime-700 text-white',
   },
   {
     id: 'food',
@@ -56,7 +61,8 @@ const PREDEFINED_SECTORS = [
     icon: Utensils,
     desc: 'Dry cereals, meat, vegetables, sugar',
     colorClasses: 'text-orange-700 bg-orange-50 border-orange-300 dark:bg-orange-950/30 dark:text-orange-300 dark:border-orange-700',
-    activeBg: 'bg-orange-600 text-white border-orange-600',
+    selectedBorder: 'border-orange-500 ring-1 ring-orange-500/20 bg-orange-50/10',
+    checkBg: 'bg-orange-600 text-white',
   },
   {
     id: 'cleaning',
@@ -64,7 +70,8 @@ const PREDEFINED_SECTORS = [
     icon: Brush,
     desc: 'Sanitation, garbage collection, fumigation',
     colorClasses: 'text-teal-700 bg-teal-50 border-teal-300 dark:bg-teal-950/30 dark:text-teal-300 dark:border-teal-700',
-    activeBg: 'bg-teal-600 text-white border-teal-600',
+    selectedBorder: 'border-teal-500 ring-1 ring-teal-500/20 bg-teal-50/10',
+    checkBg: 'bg-teal-600 text-white',
   },
   {
     id: 'security',
@@ -72,7 +79,8 @@ const PREDEFINED_SECTORS = [
     icon: LockKeyhole,
     desc: 'Guarding services, biometric access',
     colorClasses: 'text-violet-700 bg-violet-50 border-violet-300 dark:bg-violet-950/30 dark:text-violet-300 dark:border-violet-700',
-    activeBg: 'bg-violet-600 text-white border-violet-600',
+    selectedBorder: 'border-violet-500 ring-1 ring-violet-500/20 bg-violet-50/10',
+    checkBg: 'bg-violet-600 text-white',
   },
   {
     id: 'education',
@@ -80,7 +88,8 @@ const PREDEFINED_SECTORS = [
     icon: Building2,
     desc: 'Lab chemicals, desks, textbooks',
     colorClasses: 'text-fuchsia-700 bg-fuchsia-50 border-fuchsia-300 dark:bg-fuchsia-950/30 dark:text-fuchsia-300 dark:border-fuchsia-700',
-    activeBg: 'bg-fuchsia-600 text-white border-fuchsia-600',
+    selectedBorder: 'border-fuchsia-500 ring-1 ring-fuchsia-500/20 bg-fuchsia-50/10',
+    checkBg: 'bg-fuchsia-600 text-white',
   },
   {
     id: 'consulting',
@@ -88,7 +97,8 @@ const PREDEFINED_SECTORS = [
     icon: Briefcase,
     desc: 'Feasibility, audit, legal, risk studies',
     colorClasses: 'text-rose-700 bg-rose-50 border-rose-300 dark:bg-rose-950/30 dark:text-rose-300 dark:border-rose-700',
-    activeBg: 'bg-rose-600 text-white border-rose-600',
+    selectedBorder: 'border-rose-500 ring-1 ring-rose-500/20 bg-rose-50/10',
+    checkBg: 'bg-rose-600 text-white',
   },
 ];
 
@@ -183,13 +193,13 @@ export default function CapabilityProfilePage() {
         </button>
       </div>
 
-      {/* Subtle Underlined Horizontal Tabs */}
+      {/* Fresh Emerald Underlined Horizontal Tabs */}
       <div className="flex border-b border-border gap-6 mb-6 overflow-x-auto scrollbar-none px-1">
         <button
           onClick={() => setActiveTab('sectors')}
           className={`flex items-center gap-2 py-3 text-xs font-bold transition-all shrink-0 border-b-2 -mb-px ${
             activeTab === 'sectors'
-              ? 'border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400'
+              ? 'border-emerald-600 text-emerald-700 dark:border-emerald-400 dark:text-emerald-400'
               : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
           }`}
         >
@@ -201,7 +211,7 @@ export default function CapabilityProfilePage() {
           onClick={() => setActiveTab('counties')}
           className={`flex items-center gap-2 py-3 text-xs font-bold transition-all shrink-0 border-b-2 -mb-px ${
             activeTab === 'counties'
-              ? 'border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400'
+              ? 'border-emerald-600 text-emerald-700 dark:border-emerald-400 dark:text-emerald-400'
               : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
           }`}
         >
@@ -213,7 +223,7 @@ export default function CapabilityProfilePage() {
           onClick={() => setActiveTab('budget')}
           className={`flex items-center gap-2 py-3 text-xs font-bold transition-all shrink-0 border-b-2 -mb-px ${
             activeTab === 'budget'
-              ? 'border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400'
+              ? 'border-emerald-600 text-emerald-700 dark:border-emerald-400 dark:text-emerald-400'
               : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
           }`}
         >
@@ -245,7 +255,7 @@ export default function CapabilityProfilePage() {
                       onClick={() => toggleSector(sector.label)}
                       className={`p-3.5 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${
                         isSelected
-                          ? 'border-indigo-500 ring-1 ring-indigo-500/20 bg-card shadow-sm'
+                          ? sector.selectedBorder
                           : 'border-border bg-card hover:bg-muted/50'
                       }`}
                     >
@@ -261,7 +271,7 @@ export default function CapabilityProfilePage() {
                             {sector.label}
                           </p>
                           {isSelected ? (
-                            <span className="w-4 h-4 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px]">
+                            <span className={`w-4 h-4 rounded-full ${sector.checkBg} flex items-center justify-center text-[10px]`}>
                               <Check size={10} />
                             </span>
                           ) : (
@@ -286,7 +296,7 @@ export default function CapabilityProfilePage() {
 
             <div className="flex flex-wrap gap-1.5 mb-3">
               {customKeywords.map(kw => (
-                <span key={kw} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 text-xs font-medium">
+                <span key={kw} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-800 border border-emerald-200 text-xs font-medium">
                   {kw}
                   <button onClick={() => handleRemoveKeyword(kw)} className="hover:text-danger">
                     <X size={11} />
@@ -340,7 +350,7 @@ export default function CapabilityProfilePage() {
                 </h3>
                 <button
                   onClick={() => setSelectedCounties([])}
-                  className="text-xs text-indigo-600 hover:underline font-semibold"
+                  className="text-xs text-emerald-600 hover:underline font-semibold"
                 >
                   Clear All
                 </button>
@@ -355,7 +365,7 @@ export default function CapabilityProfilePage() {
                       onClick={() => toggleCounty(county)}
                       className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all border ${
                         isSelected
-                          ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
+                          ? 'bg-emerald-600 text-white border-emerald-600 shadow-sm'
                           : 'bg-card text-foreground border-border hover:bg-muted'
                       }`}
                     >
@@ -392,7 +402,7 @@ export default function CapabilityProfilePage() {
                   }}
                   className={`p-3.5 rounded-xl border text-left text-xs font-semibold transition-all flex items-center justify-between ${
                     minBudget === preset.min && maxBudget === preset.max
-                      ? 'border-indigo-600 bg-indigo-50/50 text-indigo-900 ring-1 ring-indigo-500'
+                      ? 'border-emerald-600 bg-emerald-50/50 text-emerald-900 ring-1 ring-emerald-500'
                       : 'border-border bg-card hover:bg-muted text-foreground'
                   }`}
                 >
@@ -446,7 +456,7 @@ export default function CapabilityProfilePage() {
                   onClick={() => setAgpoCategory(agpo.id as any)}
                   className={`p-3.5 rounded-xl border text-center text-xs font-bold transition-all ${
                     agpoCategory === agpo.id
-                      ? `${agpo.color} shadow-sm ring-2 ring-offset-1 ring-primary`
+                      ? `${agpo.color} shadow-sm ring-2 ring-offset-1 ring-emerald-600`
                       : `bg-card ${agpo.unselected}`
                   }`}
                 >
