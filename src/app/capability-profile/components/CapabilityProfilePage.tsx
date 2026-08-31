@@ -446,23 +446,36 @@ export default function CapabilityProfilePage() {
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { id: 'None', label: 'None (Standard)', color: 'bg-slate-700 text-white', unselected: 'border-slate-200 hover:bg-slate-50' },
-                { id: 'Youth', label: 'Youth (18–35)', color: 'bg-purple-600 text-white', unselected: 'border-purple-200 text-purple-700 bg-purple-50/50 hover:bg-purple-50' },
-                { id: 'Women', label: 'Women-Owned', color: 'bg-pink-600 text-white', unselected: 'border-pink-200 text-pink-700 bg-pink-50/50 hover:bg-pink-50' },
-                { id: 'PWD', label: 'PWD Enterprise', color: 'bg-blue-600 text-white', unselected: 'border-blue-200 text-blue-700 bg-blue-50/50 hover:bg-blue-50' },
-              ].map(agpo => (
-                <button
-                  key={agpo.id}
-                  onClick={() => setAgpoCategory(agpo.id as any)}
-                  className={`p-3.5 rounded-xl border text-center text-xs font-bold transition-all ${
-                    agpoCategory === agpo.id
-                      ? `${agpo.color} shadow-sm ring-2 ring-offset-1 ring-emerald-600`
-                      : `bg-card ${agpo.unselected}`
-                  }`}
-                >
-                  {agpo.label}
-                </button>
-              ))}
+                { id: 'None', label: 'None (Standard)', sub: 'Open competitive' },
+                { id: 'Youth', label: 'Youth (18–35)', sub: 'AGPO 30% quota' },
+                { id: 'Women', label: 'Women-Owned', sub: 'AGPO 30% quota' },
+                { id: 'PWD', label: 'PWD Enterprise', sub: 'AGPO 30% quota' },
+              ].map(agpo => {
+                const isSelected = agpoCategory === agpo.id;
+                return (
+                  <button
+                    key={agpo.id}
+                    onClick={() => setAgpoCategory(agpo.id as any)}
+                    className={`p-3.5 rounded-xl border text-left text-xs transition-all flex flex-col justify-between ${
+                      isSelected
+                        ? 'border-primary bg-primary/5 text-primary ring-1 ring-primary shadow-sm font-bold'
+                        : 'border-border bg-card hover:bg-muted text-foreground font-medium'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-1">
+                      <span className={isSelected ? 'text-primary' : 'text-foreground'}>{agpo.label}</span>
+                      {isSelected ? (
+                        <span className="w-4 h-4 rounded-full bg-primary text-white flex items-center justify-center text-[10px]">
+                          <Check size={10} />
+                        </span>
+                      ) : (
+                        <span className="w-4 h-4 rounded-full border border-border" />
+                      )}
+                    </div>
+                    <span className="text-[10px] text-muted-foreground font-normal">{agpo.sub}</span>
+                  </button>
+                );
+              })}
             </div>
           </div>
         </div>
