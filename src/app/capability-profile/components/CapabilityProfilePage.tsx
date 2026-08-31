@@ -10,33 +10,103 @@ import {
 import { toast } from 'sonner';
 
 const PREDEFINED_SECTORS = [
-  { id: 'roads', label: 'Roads & Civil Works', icon: HardHat, desc: 'Paving, culverts, earthworks, bridges' },
-  { id: 'water', label: 'Water & Solar Boreholes', icon: Droplets, desc: 'Pumps, pipelines, drilling, irrigation' },
-  { id: 'health', label: 'Healthcare & Medical', icon: Stethoscope, desc: 'Pharmaceuticals, surgical gear, PPE' },
-  { id: 'ict', label: 'ICT & Enterprise Tech', icon: Laptop, desc: 'Software, networking, hardware, CCTV' },
-  { id: 'agriculture', label: 'Agriculture & Agro-Supply', icon: Wheat, desc: 'Fertilizers, seeds, farm machinery' },
-  { id: 'food', label: 'Food & Catering Supplies', icon: Utensils, desc: 'Dry cereals, meat, vegetables, sugar' },
-  { id: 'cleaning', label: 'Cleaning & Janitorial', icon: Brush, desc: 'Sanitation, garbage collection, fumigation' },
-  { id: 'security', label: 'Security & Surveillance', icon: LockKeyhole, desc: 'Guarding services, biometric access' },
-  { id: 'education', label: 'Educational & Lab Supplies', icon: Building2, desc: 'Lab chemicals, desks, textbooks' },
-  { id: 'consulting', label: 'Consultancy & Advisory', icon: Briefcase, desc: 'Feasibility, audit, legal, risk studies' },
+  {
+    id: 'roads',
+    label: 'Roads & Civil Works',
+    icon: HardHat,
+    desc: 'Paving, culverts, earthworks, bridges',
+    colorClasses: 'text-amber-700 bg-amber-50 border-amber-300 dark:bg-amber-950/30 dark:text-amber-300 dark:border-amber-700',
+    activeBg: 'bg-amber-600 text-white border-amber-600',
+  },
+  {
+    id: 'water',
+    label: 'Water & Solar Boreholes',
+    icon: Droplets,
+    desc: 'Pumps, pipelines, drilling, irrigation',
+    colorClasses: 'text-sky-700 bg-sky-50 border-sky-300 dark:bg-sky-950/30 dark:text-sky-300 dark:border-sky-700',
+    activeBg: 'bg-sky-600 text-white border-sky-600',
+  },
+  {
+    id: 'health',
+    label: 'Healthcare & Medical',
+    icon: Stethoscope,
+    desc: 'Pharmaceuticals, surgical gear, PPE',
+    colorClasses: 'text-emerald-700 bg-emerald-50 border-emerald-300 dark:bg-emerald-950/30 dark:text-emerald-300 dark:border-emerald-700',
+    activeBg: 'bg-emerald-600 text-white border-emerald-600',
+  },
+  {
+    id: 'ict',
+    label: 'ICT & Enterprise Tech',
+    icon: Laptop,
+    desc: 'Software, networking, hardware, CCTV',
+    colorClasses: 'text-indigo-700 bg-indigo-50 border-indigo-300 dark:bg-indigo-950/30 dark:text-indigo-300 dark:border-indigo-700',
+    activeBg: 'bg-indigo-600 text-white border-indigo-600',
+  },
+  {
+    id: 'agriculture',
+    label: 'Agriculture & Agro-Supply',
+    icon: Wheat,
+    desc: 'Fertilizers, seeds, farm machinery',
+    colorClasses: 'text-lime-800 bg-lime-50 border-lime-300 dark:bg-lime-950/30 dark:text-lime-300 dark:border-lime-700',
+    activeBg: 'bg-lime-700 text-white border-lime-700',
+  },
+  {
+    id: 'food',
+    label: 'Food & Catering Supplies',
+    icon: Utensils,
+    desc: 'Dry cereals, meat, vegetables, sugar',
+    colorClasses: 'text-orange-700 bg-orange-50 border-orange-300 dark:bg-orange-950/30 dark:text-orange-300 dark:border-orange-700',
+    activeBg: 'bg-orange-600 text-white border-orange-600',
+  },
+  {
+    id: 'cleaning',
+    label: 'Cleaning & Janitorial',
+    icon: Brush,
+    desc: 'Sanitation, garbage collection, fumigation',
+    colorClasses: 'text-teal-700 bg-teal-50 border-teal-300 dark:bg-teal-950/30 dark:text-teal-300 dark:border-teal-700',
+    activeBg: 'bg-teal-600 text-white border-teal-600',
+  },
+  {
+    id: 'security',
+    label: 'Security & Surveillance',
+    icon: LockKeyhole,
+    desc: 'Guarding services, biometric access',
+    colorClasses: 'text-violet-700 bg-violet-50 border-violet-300 dark:bg-violet-950/30 dark:text-violet-300 dark:border-violet-700',
+    activeBg: 'bg-violet-600 text-white border-violet-600',
+  },
+  {
+    id: 'education',
+    label: 'Educational & Lab Supplies',
+    icon: Building2,
+    desc: 'Lab chemicals, desks, textbooks',
+    colorClasses: 'text-fuchsia-700 bg-fuchsia-50 border-fuchsia-300 dark:bg-fuchsia-950/30 dark:text-fuchsia-300 dark:border-fuchsia-700',
+    activeBg: 'bg-fuchsia-600 text-white border-fuchsia-600',
+  },
+  {
+    id: 'consulting',
+    label: 'Consultancy & Advisory',
+    icon: Briefcase,
+    desc: 'Feasibility, audit, legal, risk studies',
+    colorClasses: 'text-rose-700 bg-rose-50 border-rose-300 dark:bg-rose-950/30 dark:text-rose-300 dark:border-rose-700',
+    activeBg: 'bg-rose-600 text-white border-rose-600',
+  },
 ];
 
 const REGION_PRESETS = [
-  { label: 'All 47 Counties (Nationwide)', counties: kenyaCounties },
-  { label: 'Nairobi Metropolitan', counties: ['Nairobi', 'Kiambu', 'Machakos', 'Kajiado'] },
-  { label: 'Coast Region', counties: ['Mombasa', 'Kilifi', 'Kwale', 'Taita Taveta', 'Lamu', 'Tana River'] },
-  { label: 'Rift Valley', counties: ['Nakuru', 'Uasin Gishu', 'Kajiado', 'Bomet', 'Kericho', 'Narok', 'Baringo', 'Nandi'] },
-  { label: 'Central Kenya', counties: ['Kiambu', 'Nyeri', 'Murang\'a', 'Kirinyaga', 'Nyandarua'] },
-  { label: 'Western & Nyanza', counties: ['Kisumu', 'Kakamega', 'Bungoma', 'Kisii', 'Homa Bay', 'Migori', 'Siaya', 'Busia'] },
-  { label: 'Northern & ASAL', counties: ['Turkana', 'Garissa', 'Wajir', 'Mandera', 'Marsabit', 'Isiolo', 'Samburu'] },
+  { label: 'All 47 Counties (Nationwide)', counties: kenyaCounties, badgeColor: 'bg-indigo-100 text-indigo-800 border-indigo-200' },
+  { label: 'Nairobi Metropolitan', counties: ['Nairobi', 'Kiambu', 'Machakos', 'Kajiado'], badgeColor: 'bg-amber-100 text-amber-800 border-amber-200' },
+  { label: 'Coast Region', counties: ['Mombasa', 'Kilifi', 'Kwale', 'Taita Taveta', 'Lamu', 'Tana River'], badgeColor: 'bg-sky-100 text-sky-800 border-sky-200' },
+  { label: 'Rift Valley', counties: ['Nakuru', 'Uasin Gishu', 'Kajiado', 'Bomet', 'Kericho', 'Narok', 'Baringo', 'Nandi'], badgeColor: 'bg-emerald-100 text-emerald-800 border-emerald-200' },
+  { label: 'Central Kenya', counties: ['Kiambu', 'Nyeri', 'Murang\'a', 'Kirinyaga', 'Nyandarua'], badgeColor: 'bg-teal-100 text-teal-800 border-teal-200' },
+  { label: 'Western & Nyanza', counties: ['Kisumu', 'Kakamega', 'Bungoma', 'Kisii', 'Homa Bay', 'Migori', 'Siaya', 'Busia'], badgeColor: 'bg-violet-100 text-violet-800 border-violet-200' },
+  { label: 'Northern & ASAL', counties: ['Turkana', 'Garissa', 'Wajir', 'Mandera', 'Marsabit', 'Isiolo', 'Samburu'], badgeColor: 'bg-orange-100 text-orange-800 border-orange-200' },
 ];
 
 const BUDGET_PRESETS = [
-  { label: 'Under KES 5M (SME & AGPO)', min: '0', max: '5000000' },
-  { label: 'KES 5M – KES 25M (Standard Contracts)', min: '5000000', max: '25000000' },
-  { label: 'KES 25M – KES 100M (Mid-Scale Enterprise)', min: '25000000', max: '100000000' },
-  { label: 'Above KES 100M (Large Infrastructure & PPP)', min: '100000000', max: '2000000000' },
+  { label: 'Under KES 5M (SME & AGPO)', min: '0', max: '5000000', tag: 'Micro / SME' },
+  { label: 'KES 5M – KES 25M (Standard Contracts)', min: '5000000', max: '25000000', tag: 'Standard' },
+  { label: 'KES 25M – KES 100M (Mid-Scale Enterprise)', min: '25000000', max: '100000000', tag: 'Commercial' },
+  { label: 'Above KES 100M (Major Infrastructure & PPP)', min: '100000000', max: '2000000000', tag: 'Mega Project' },
 ];
 
 export default function CapabilityProfilePage() {
@@ -119,7 +189,7 @@ export default function CapabilityProfilePage() {
           onClick={() => setActiveTab('sectors')}
           className={`flex items-center gap-2 py-3 text-xs font-bold transition-all shrink-0 border-b-2 -mb-px ${
             activeTab === 'sectors'
-              ? 'border-primary text-primary'
+              ? 'border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400'
               : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
           }`}
         >
@@ -131,7 +201,7 @@ export default function CapabilityProfilePage() {
           onClick={() => setActiveTab('counties')}
           className={`flex items-center gap-2 py-3 text-xs font-bold transition-all shrink-0 border-b-2 -mb-px ${
             activeTab === 'counties'
-              ? 'border-primary text-primary'
+              ? 'border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400'
               : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
           }`}
         >
@@ -143,7 +213,7 @@ export default function CapabilityProfilePage() {
           onClick={() => setActiveTab('budget')}
           className={`flex items-center gap-2 py-3 text-xs font-bold transition-all shrink-0 border-b-2 -mb-px ${
             activeTab === 'budget'
-              ? 'border-primary text-primary'
+              ? 'border-indigo-600 text-indigo-600 dark:border-indigo-400 dark:text-indigo-400'
               : 'border-transparent text-muted-foreground hover:text-foreground hover:border-border'
           }`}
         >
@@ -152,7 +222,7 @@ export default function CapabilityProfilePage() {
         </button>
       </div>
 
-      {/* Tab 1: Industry Sectors */}
+      {/* Tab 1: Industry Sectors with Distinct Color Coding */}
       {activeTab === 'sectors' && (
         <div className="space-y-6 animate-fade-in">
           <div className="card p-6">
@@ -163,7 +233,7 @@ export default function CapabilityProfilePage() {
               </p>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
               {PREDEFINED_SECTORS.map((sector) => {
                 const Icon = sector.icon;
                 const isSelected = selectedSectors.includes(sector.label);
@@ -171,23 +241,32 @@ export default function CapabilityProfilePage() {
                   <div
                     key={sector.id}
                     onClick={() => toggleSector(sector.label)}
-                    className={`p-3.5 rounded-xl border cursor-pointer transition-all flex items-start gap-3 ${
+                    className={`p-4 rounded-xl border cursor-pointer transition-all flex items-start gap-3.5 ${
                       isSelected
-                        ? 'border-primary bg-primary/5 shadow-sm'
-                        : 'border-border bg-card hover:bg-muted/60'
+                        ? 'border-indigo-500 ring-1 ring-indigo-500/20 bg-card shadow-sm'
+                        : 'border-border bg-card hover:bg-muted/50'
                     }`}
                   >
-                    <div className={`p-2 rounded-lg shrink-0 ${isSelected ? 'bg-primary text-white' : 'bg-muted text-muted-foreground'}`}>
-                      <Icon size={16} />
+                    {/* Domain-specific distinct color avatar */}
+                    <div className={`p-2.5 rounded-xl shrink-0 transition-all border ${
+                      isSelected ? sector.colorClasses : 'bg-muted text-muted-foreground border-border'
+                    }`}>
+                      <Icon size={18} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center justify-between">
-                        <p className={`text-xs font-bold ${isSelected ? 'text-primary' : 'text-foreground'}`}>
+                        <p className={`text-xs font-bold ${isSelected ? 'text-foreground font-extrabold' : 'text-muted-foreground'}`}>
                           {sector.label}
                         </p>
-                        {isSelected && <Check size={14} className="text-primary shrink-0" />}
+                        {isSelected ? (
+                          <span className="w-5 h-5 rounded-full bg-indigo-600 text-white flex items-center justify-center text-[10px]">
+                            <Check size={12} />
+                          </span>
+                        ) : (
+                          <span className="w-5 h-5 rounded-full border border-border" />
+                        )}
                       </div>
-                      <p className="text-[11px] text-muted-foreground mt-0.5 leading-relaxed">{sector.desc}</p>
+                      <p className="text-[11px] text-muted-foreground mt-1 leading-relaxed">{sector.desc}</p>
                     </div>
                   </div>
                 );
@@ -199,12 +278,12 @@ export default function CapabilityProfilePage() {
           <div className="card p-6">
             <h2 className="text-sm font-bold text-foreground mb-1">Optional Niche Keywords</h2>
             <p className="text-xs text-muted-foreground mb-3">
-              Add specific products, machinery models, or specialized services (optional):
+              Add specific products, machinery models, or specialized items (optional):
             </p>
 
             <div className="flex flex-wrap gap-1.5 mb-3">
               {customKeywords.map(kw => (
-                <span key={kw} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-secondary text-secondary-foreground text-xs font-medium">
+                <span key={kw} className="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-indigo-50 text-indigo-700 border border-indigo-200 text-xs font-medium">
                   {kw}
                   <button onClick={() => handleRemoveKeyword(kw)} className="hover:text-danger">
                     <X size={11} />
@@ -219,7 +298,7 @@ export default function CapabilityProfilePage() {
                 value={keywordInput}
                 onChange={e => setKeywordInput(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && (e.preventDefault(), handleAddKeyword())}
-                placeholder="e.g. hemodialysis, grader, asphalt..."
+                placeholder="e.g. hemodialysis, motor grader, asphalt..."
                 className="input-base text-xs"
               />
               <button onClick={handleAddKeyword} className="btn-secondary px-3 text-xs shrink-0">
@@ -244,7 +323,7 @@ export default function CapabilityProfilePage() {
                 <button
                   key={i}
                   onClick={() => applyCountyPreset(preset.counties)}
-                  className="px-3 py-1.5 rounded-lg text-xs font-semibold bg-muted hover:bg-secondary text-foreground hover:text-primary transition-all border border-border"
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all border ${preset.badgeColor} hover:opacity-90 active:scale-95`}
                 >
                   {preset.label}
                 </button>
@@ -258,7 +337,7 @@ export default function CapabilityProfilePage() {
                 </h3>
                 <button
                   onClick={() => setSelectedCounties([])}
-                  className="text-xs text-primary hover:underline font-semibold"
+                  className="text-xs text-indigo-600 hover:underline font-semibold"
                 >
                   Clear All
                 </button>
@@ -273,7 +352,7 @@ export default function CapabilityProfilePage() {
                       onClick={() => toggleCounty(county)}
                       className={`px-2.5 py-1 rounded-lg text-xs font-medium transition-all border ${
                         isSelected
-                          ? 'bg-primary text-primary-foreground border-primary'
+                          ? 'bg-indigo-600 text-white border-indigo-600 shadow-sm'
                           : 'bg-card text-foreground border-border hover:bg-muted'
                       }`}
                     >
@@ -308,13 +387,16 @@ export default function CapabilityProfilePage() {
                     setMaxBudget(preset.max);
                     toast.info(`Budget set to ${preset.label}`);
                   }}
-                  className={`p-3 rounded-xl border text-left text-xs font-semibold transition-all ${
+                  className={`p-3.5 rounded-xl border text-left text-xs font-semibold transition-all flex items-center justify-between ${
                     minBudget === preset.min && maxBudget === preset.max
-                      ? 'border-primary bg-primary/5 text-primary'
+                      ? 'border-indigo-600 bg-indigo-50/50 text-indigo-900 ring-1 ring-indigo-500'
                       : 'border-border bg-card hover:bg-muted text-foreground'
                   }`}
                 >
-                  {preset.label}
+                  <span>{preset.label}</span>
+                  <span className="text-[10px] px-2 py-0.5 rounded-full bg-muted font-bold text-muted-foreground">
+                    {preset.tag}
+                  </span>
                 </button>
               ))}
             </div>
@@ -351,18 +433,18 @@ export default function CapabilityProfilePage() {
 
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
               {[
-                { id: 'None', label: 'None (Standard)' },
-                { id: 'Youth', label: 'Youth (18–35)' },
-                { id: 'Women', label: 'Women-Owned' },
-                { id: 'PWD', label: 'PWD Enterprise' },
+                { id: 'None', label: 'None (Standard)', color: 'bg-slate-700 text-white', unselected: 'border-slate-200 hover:bg-slate-50' },
+                { id: 'Youth', label: 'Youth (18–35)', color: 'bg-purple-600 text-white', unselected: 'border-purple-200 text-purple-700 bg-purple-50/50 hover:bg-purple-50' },
+                { id: 'Women', label: 'Women-Owned', color: 'bg-pink-600 text-white', unselected: 'border-pink-200 text-pink-700 bg-pink-50/50 hover:bg-pink-50' },
+                { id: 'PWD', label: 'PWD Enterprise', color: 'bg-blue-600 text-white', unselected: 'border-blue-200 text-blue-700 bg-blue-50/50 hover:bg-blue-50' },
               ].map(agpo => (
                 <button
                   key={agpo.id}
                   onClick={() => setAgpoCategory(agpo.id as any)}
-                  className={`p-3 rounded-xl border text-center text-xs font-bold transition-all ${
+                  className={`p-3.5 rounded-xl border text-center text-xs font-bold transition-all ${
                     agpoCategory === agpo.id
-                      ? 'border-primary bg-primary text-white shadow-sm'
-                      : 'border-border bg-card hover:bg-muted text-foreground'
+                      ? `${agpo.color} shadow-sm ring-2 ring-offset-1 ring-primary`
+                      : `bg-card ${agpo.unselected}`
                   }`}
                 >
                   {agpo.label}
@@ -379,7 +461,7 @@ export default function CapabilityProfilePage() {
           Ready to save your preferences? Click save to recalculate all 500 fit scores.
         </span>
         <button onClick={handleSave} className="btn-primary text-xs">
-          <Save size={14} /> Save & Recalculate Matches
+          <Save size={14} /> Save Preferences
         </button>
       </div>
     </div>
