@@ -192,6 +192,18 @@ export default function TenderDetailMain({ tender }: TenderDetailMainProps) {
           <ShieldCheck size={14} />
           5. Pre-Bid Checklist
         </button>
+
+        <button
+          onClick={() => setActiveTab('ai-strategist')}
+          className={`flex items-center gap-2 py-3 text-xs font-bold transition-all shrink-0 border-b-2 -mb-px ${
+            activeTab === 'ai-strategist'
+              ? 'border-emerald-600 text-emerald-700 dark:border-emerald-400 dark:text-emerald-400'
+              : 'border-transparent text-primary hover:text-primary/80 hover:border-primary/20'
+          }`}
+        >
+          <Sparkles size={14} className="text-accent" />
+          6. AI Bid Strategist
+        </button>
       </div>
 
       {/* Tab 1: Overview & Scope */}
@@ -286,6 +298,114 @@ export default function TenderDetailMain({ tender }: TenderDetailMainProps) {
       {activeTab === 'compliance' && (
         <div className="animate-fade-in">
           <ComplianceChecklist tender={tender} />
+        </div>
+      )}
+
+      {/* Tab 6: AI Bid Strategist & Disqualification Intelligence */}
+      {activeTab === 'ai-strategist' && (
+        <div className="space-y-6 animate-fade-in">
+          {/* Executive Summary Card */}
+          <div className="card p-6 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-border">
+              <div className="flex items-center gap-2">
+                <div className="w-8 h-8 rounded-lg bg-primary/10 text-primary flex items-center justify-center">
+                  <Sparkles size={16} className="text-accent" />
+                </div>
+                <div>
+                  <h3 className="text-sm font-bold text-foreground">AI Bid Analysis & Executive Scope</h3>
+                  <p className="text-[11px] text-muted-foreground">Procurement Intelligence Model v2.4</p>
+                </div>
+              </div>
+              <span className="text-xs font-bold px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200">
+                AI Verified Notice
+              </span>
+            </div>
+
+            <p className="text-xs text-foreground/80 leading-relaxed bg-muted/30 p-3.5 rounded-xl border border-border">
+              This tender issued by <strong>{tender.procuringEntity}</strong> represents an official public procurement opportunity under <strong>{tender.category}</strong>.
+              Estimated budget capacity is <strong>{tender.estimatedValue ? `KES ${(tender.estimatedValue).toLocaleString()}` : 'Undisclosed'}</strong>.
+              Eligibility is designated under the <strong>{tender.agpoCategory}</strong> scheme.
+              Submission venue is <strong>{tender.submissionVenue}</strong>.
+            </p>
+          </div>
+
+          {/* Critical Watch-Outs & Disqualification Shield */}
+          <div className="card p-6 border-danger/30 space-y-4">
+            <div className="flex items-center gap-2 text-danger">
+              <ShieldCheck size={20} />
+              <h3 className="text-sm font-bold">Preliminary Disqualification Hazards & Watch-Outs</h3>
+            </div>
+            <p className="text-xs text-muted-foreground">
+              Under Section 74 & 79 of the Public Procurement and Asset Disposal Act 2015, bids failing any of these preliminary criteria are disqualified without technical scoring:
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-1">
+              <div className="p-3.5 rounded-xl bg-danger-bg/40 border border-danger/20 space-y-1">
+                <span className="text-xs font-bold text-danger">1. Bid Bond Validity Duration</span>
+                <p className="text-[11px] text-muted-foreground">
+                  {tender.agpoCategory === 'Open'
+                    ? 'Must be valid for 150 calendar days from the opening date. Submitting a 120-day bond results in mandatory automatic disqualification.'
+                    : 'AGPO reserved bids are exempt from cash bid bonds; a duly completed and signed Tender Securing Declaration Form is mandatory.'}
+                </p>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-danger-bg/40 border border-danger/20 space-y-1">
+                <span className="text-xs font-bold text-danger">2. Tax & Corporate Standing</span>
+                <p className="text-[11px] text-muted-foreground">
+                  Valid KRA Tax Compliance Certificate verifiable on the KRA portal on date of tender opening, plus CR12 Certificate issued within the last 12 months.
+                </p>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-danger-bg/40 border border-danger/20 space-y-1">
+                <span className="text-xs font-bold text-danger">3. Submission Window & Format</span>
+                <p className="text-[11px] text-muted-foreground">
+                  {tender.submissionVenue === 'e-GP'
+                    ? 'Bids must be uploaded to the e-GP Kenya portal before 10:00 AM EAT. Late encrypted uploads cannot be accepted by the system.'
+                    : `Two physical copies (Original & Copy) delivered to ${tender.procuringEntity} tender box before 10:00 AM EAT.`}
+                </p>
+              </div>
+
+              <div className="p-3.5 rounded-xl bg-danger-bg/40 border border-danger/20 space-y-1">
+                <span className="text-xs font-bold text-danger">4. Technical Certifications</span>
+                <p className="text-[11px] text-muted-foreground">
+                  {tender.category.includes('Roads') || tender.category.includes('Construction')
+                    ? 'NCA Registration and current Annual Practicing License for key contractor staff.'
+                    : 'Manufacturer Authorization Form (MAF) from authorized distributor/OEM.'}
+                </p>
+              </div>
+            </div>
+          </div>
+
+          {/* Application Portal & Action Guide */}
+          <div className="card p-6 border-primary/20 bg-primary/5 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+              <div>
+                <h3 className="text-sm font-bold text-foreground">Official Submission Portal</h3>
+                <p className="text-xs text-muted-foreground mt-0.5">
+                  Direct verified link to download tender documents and register your bid.
+                </p>
+              </div>
+              <a
+                href={tender.egpLink || tender.documentUrl || 'https://tenders.go.ke/tenders'}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-primary text-xs px-4 py-2 shadow-sm flex items-center gap-1.5 shrink-0 self-start sm:self-auto"
+              >
+                Apply on Official Portal <ExternalLink size={14} />
+              </a>
+            </div>
+
+            <div className="p-3.5 rounded-xl bg-card border border-border text-xs text-muted-foreground space-y-2">
+              <span className="font-bold text-foreground">Step-by-Step Bid Submission Checklist:</span>
+              <div className="space-y-1 text-[11px]">
+                <div>1. Download full tender document and addenda from the official portal.</div>
+                <div>2. Complete the BOQ rate takeoff (export CSV from Tab 2 above).</div>
+                <div>3. Request bank guarantee / Bid Bond with 150 days validity.</div>
+                <div>4. Prepare company statutory documents (TCC, CR12, AGPO certificate).</div>
+                <div>5. Submit bid before 10:00 AM EAT on closing date.</div>
+              </div>
+            </div>
+          </div>
         </div>
       )}
     </div>

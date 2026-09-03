@@ -9,7 +9,7 @@ interface SignupFormProps {
 }
 
 export default function SignupForm({ onSwitchToLogin }: SignupFormProps) {
-  const { login } = useAuth();
+  const { register } = useAuth();
   const router = useRouter();
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -23,18 +23,16 @@ export default function SignupForm({ onSwitchToLogin }: SignupFormProps) {
     e.preventDefault();
     setError('');
     if (password.length < 8) {
-      setError('Password must be at least 8 characters');
+      setError('Password must be at least 8 characters long');
       return;
     }
     setLoading(true);
-    // Simulate registration — auto-login as free user demo
-    await new Promise(r => setTimeout(r, 1200));
-    const result = await login('wanjiku.mwangi@techbiz.co.ke', 'TenderIQ@Free2026');
+    const result = await register({ name, email, company, password });
     setLoading(false);
     if (result.success) {
       router.push('/capability-profile');
     } else {
-      setError('Registration failed. Please try again.');
+      setError(result.error || 'Registration failed. Please try again.');
     }
   };
 

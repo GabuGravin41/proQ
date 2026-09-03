@@ -1,44 +1,63 @@
 import { NextResponse } from 'next/server';
-import { BENCHMARK_TENDERS } from '@/lib/data';
+import { mockTenders } from '@/lib/tenderData';
+import { enrichTenderWithLiveStatus } from '@/lib/dateUtils';
 
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
-  const q = searchParams.get('q')?.toLowerCase() || '';
-  const county = searchParams.get('county') || '';
-  const category = searchParams.get('category') || '';
-  const agpo = searchParams.get('agpo') || '';
-  const status = searchParams.get('status') || 'Active';
+  const q = searchParams.get('q')?.toLowerCase().trim() || '';
+  const county = searchParams.get('county')?.toLowerCase() || '';
+  const category = searchParams.get('category')?.toLowerCase() || '';
+  const agpo = searchParams.get('agpo')?.toLowerCase() || '';
+  const status = searchParams.get('status')?.toLowerCase() || '';
+  const limit = parseInt(searchParams.get('limit') || '50', 10);
+  const offset = parseInt(searchParams.get('offset') || '0', 10);
 
-  let results = BENCHMARK_TENDERS;
+  // 1. Enrich all tenders with real-time status and days remaining
+  let results = mockTenders.map(t => enrichTenderWithLiveStatus(t));
 
+  // 2. Filter by status if specified
   if (status) {
-    results = results.filter(t => t.status.toLowerCase() === status.toLowerCase());
+    if (status === 'active') {
+      results = results.filter(t => t.status === 'active' || t.status === 'closing-soon');
+    } else {
+      results = results.filter(t => t.status === status);
+    }
   }
 
+  // 3. Filter by County
   if (county) {
-    results = results.filter(t => t.county.toLowerCase() === county.toLowerCase());
+    results = results.filter(t => t.county.toLowerCase() === county || county === 'all');
   }
 
+  // 4. Filter by Category
   if (category) {
-    results = results.filter(t => t.category.toLowerCase().includes(category.toLowerCase()));
+    results = results.filter(t => t.category.toLowerCase().includes(category));
   }
 
+  // 5. Filter by AGPO
   if (agpo) {
-    results = results.filter(t => t.agpoCategory.toLowerCase().includes(agpo.toLowerCase()));
+    results = results.filter(t => t.agpoCategory.toLowerCase().includes(agpo));
   }
 
+  // 6. Free-text search
   if (q) {
-    results = results.filter(t => 
+    results = results.filter(t =>
       t.title.toLowerCase().includes(q) ||
       t.description.toLowerCase().includes(q) ||
-      t.organization.name.toLowerCase().includes(q) ||
-      t.tenderNumber.toLowerCase().includes(q) ||
-      t.subcategories.some(sc => sc.toLowerCase().includes(q))
+      t.procuringEntity.toLowerCase().includes(q) ||
+      t.referenceNumber.toLowerCase().includes(q) ||
+      t.county.toLowerCase().includes(q) ||
+      t.category.toLowerCase().includes(q)
     );
   }
 
+  const total = results.length;
+  const paginated = results.slice(offset, offset + limit);
+
   return NextResponse.json({
-    total: results.length,
-    tenders: results
+    total,
+    offset,
+    limit,
+    tenders: paginated,
   });
 }

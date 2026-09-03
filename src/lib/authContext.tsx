@@ -31,12 +31,20 @@ export interface UserProfile {
   smsNumber?: string;
 }
 
+export interface RegisterData {
+  name: string;
+  email: string;
+  company?: string;
+  password: string;
+}
+
 export interface AuthContextType {
   user: UserProfile | null;
   isAuthenticated: boolean;
   isSubscriber: boolean;
   isAdmin: boolean;
   login: (email: string, password: string) => Promise<{ success: boolean; error?: string }>;
+  register: (data: RegisterData) => Promise<{ success: boolean; error?: string }>;
   logout: () => void;
   updateProfile: (updates: Partial<UserProfile>) => void;
   bookmarks: string[];
@@ -94,14 +102,25 @@ const MOCK_USERS: Record<string, { password: string; profile: UserProfile }> = {
       telegramHandle: '@kipchoge_ruto',
     },
   },
+  'admin@proq.co.ke': {
+    password: 'proQ@Admin2026',
+    profile: {
+      id: 'user-003',
+      email: 'admin@proq.co.ke',
+      name: 'proQ Admin',
+      role: 'admin',
+      company: 'proQ Kenya Platform',
+      subscriptionPlan: 'enterprise',
+    },
+  },
   'admin@tenderiq.co.ke': {
     password: 'TenderIQ@Admin2026',
     profile: {
       id: 'user-003',
-      email: 'admin@tenderiq.co.ke',
-      name: 'TenderIQ Admin',
+      email: 'admin@proq.co.ke',
+      name: 'proQ Admin',
       role: 'admin',
-      company: 'TenderIQ Platform',
+      company: 'proQ Kenya Platform',
       subscriptionPlan: 'enterprise',
     },
   },
@@ -126,14 +145,95 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
-    const entry = MOCK_USERS[email.toLowerCase()];
-    if (!entry || entry.password !== password) {
-      return { success: false, error: 'Invalid email or password' };
+    const normalizedEmail = email.toLowerCase().trim();
+
+    // 1. Check built-in mock users
+    const entry = MOCK_USERS[normalizedEmail];
+    if (entry && entry.password === password) {
+      setUser(entry.profile);
+      if (typeof window !== 'undefined') {
+        localStorage.setItem('tenderiq_user', JSON.stringify(entry.profile));
+      }
+      return { success: true };
     }
-    setUser(entry.profile);
+
+    // 2. Check locally registered users
     if (typeof window !== 'undefined') {
-      localStorage.setItem('tenderiq_user', JSON.stringify(entry.profile));
+      try {
+        const storedUsersStr = localStorage.getItem('proq_registered_users');
+        if (storedUsersStr) {
+          const registeredUsers: Record<string, { password: string; profile: UserProfile }> = JSON.parse(storedUsersStr);
+          const regEntry = registeredUsers[normalizedEmail];
+          if (regEntry && regEntry.password === password) {
+            setUser(regEntry.profile);
+            localStorage.setItem('tenderiq_user', JSON.stringify(regEntry.profile));
+            return { success: true };
+          }
+        }
+      } catch (e) {
+        console.error('Error reading registered users:', e);
+      }
     }
+
+    return { success: false, error: 'Invalid email or password' };
+  }, []);
+
+  const register = useCallback(async (data: RegisterData) => {
+    const normalizedEmail = data.email.toLowerCase().trim();
+
+    if (!normalizedEmail || !data.password || !data.name) {
+      return { success: false, error: 'Please provide name, email, and password.' };
+    }
+
+    if (data.password.length < 8) {
+      return { success: false, error: 'Password must be at least 8 characters long.' };
+    }
+
+    const newProfile: UserProfile = {
+      id: `user-${Date.now()}`,
+      email: normalizedEmail,
+      name: data.name.trim(),
+      role: 'free',
+      company: data.company?.trim() || 'My Enterprise',
+      subscriptionPlan: 'free',
+      capabilities: ['General Supplies', 'Consulting'],
+      targetSectors: ['County Government', 'Parastatals'],
+      targetCounties: ['Nairobi', 'National'],
+      minBudget: 500000,
+      maxBudget: 20000000,
+      agpoStatus: 'None',
+      notifEmail: true,
+      notifWhatsApp: false,
+      notifTelegram: false,
+      notifSMS: false,
+      notifDigest: true,
+      notifRealTime: false,
+    };
+
+    if (typeof window !== 'undefined') {
+      try {
+        const storedUsersStr = localStorage.getItem('proq_registered_users');
+        const registeredUsers: Record<string, { password: string; profile: UserProfile }> = storedUsersStr
+          ? JSON.parse(storedUsersStr)
+          : {};
+
+        if (registeredUsers[normalizedEmail] || MOCK_USERS[normalizedEmail]) {
+          return { success: false, error: 'An account with this email already exists.' };
+        }
+
+        registeredUsers[normalizedEmail] = {
+          password: data.password,
+          profile: newProfile,
+        };
+
+        localStorage.setItem('proq_registered_users', JSON.stringify(registeredUsers));
+        localStorage.setItem('tenderiq_user', JSON.stringify(newProfile));
+      } catch (e) {
+        console.error('Error saving registered user:', e);
+      }
+    }
+
+    setUser(newProfile);
     return { success: true };
   }, []);
 
@@ -150,6 +250,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const updated = { ...prev, ...updates };
       if (typeof window !== 'undefined') {
         localStorage.setItem('tenderiq_user', JSON.stringify(updated));
+        // Also update in registered users store if exists
+        try {
+          const storedUsersStr = localStorage.getItem('proq_registered_users');
+          if (storedUsersStr) {
+            const registeredUsers = JSON.parse(storedUsersStr);
+            if (registeredUsers[updated.email]) {
+              registeredUsers[updated.email].profile = updated;
+              localStorage.setItem('proq_registered_users', JSON.stringify(registeredUsers));
+            }
+          }
+        } catch {}
       }
       return updated;
     });
@@ -176,6 +287,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       isSubscriber: user?.role === 'subscriber' || user?.role === 'admin',
       isAdmin: user?.role === 'admin',
       login,
+      register,
       logout,
       updateProfile,
       bookmarks,

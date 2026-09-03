@@ -72,6 +72,8 @@ function calculateSemanticMatch(tender: Tender, queryText: string): { score: num
   return { score: dynamicScore, reasons };
 }
 
+import { enrichTenderWithLiveStatus } from '@/lib/dateUtils';
+
 export default function TenderSearchPage() {
   const { user } = useAuth();
   const [filters, setFilters] = useState<FilterState>(defaultFilters);
@@ -113,7 +115,7 @@ export default function TenderSearchPage() {
   };
 
   const filteredTenders = useMemo(() => {
-    let result = [...mockTenders];
+    let result = mockTenders.map(t => enrichTenderWithLiveStatus(t));
 
     if (filters.semanticMode && filters.query.trim()) {
       // Dynamic semantic scoring & sorting
