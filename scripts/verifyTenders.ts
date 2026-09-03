@@ -121,7 +121,7 @@ if (require.main === module) {
   console.log(`📊 Total Tenders Analyzed: ${report.totalAnalyzed}`);
   console.log(`💰 Total Pipeline Value: KES ${(report.totalMarketValueKes / 1e9).toFixed(2)} Billion`);
   console.log(`🟢 Active Tenders: ${report.activeTendersCount}`);
-  console.log(`⚡ Closing Soon (< 3 Days): ${report.closingSoonCount}`);
+  console.log(`⚡ Closing Soon (< 7 Days): ${report.closingSoonCount}`);
   console.log(`🔴 Closed Tenders: ${report.closedCount}`);
   console.log(`📍 Distinct Counties: ${report.countiesCovered.length}`);
   console.log(`\n🔍 Quality & Deduplication Check:`);

@@ -62,7 +62,7 @@ tenders.forEach((t, i) => {
     const closing = new Date(t.closingDate);
     const diffDays = Math.ceil((closing.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
     if (diffDays <= 0) closedCount++;
-    else if (diffDays <= 3) closingSoonCount++;
+    else if (diffDays <= 7) closingSoonCount++;
     else activeCount++;
   }
 
@@ -76,7 +76,7 @@ tenders.forEach((t, i) => {
 console.log(`📊 Total Tenders Analyzed: ${tenders.length}`);
 console.log(`💰 Total Active Pipeline Value: KES ${(totalValue / 1e9).toFixed(2)} Billion`);
 console.log(`🟢 Active Tenders: ${activeCount}`);
-console.log(`⚡ Closing Soon (< 3 Days): ${closingSoonCount}`);
+console.log(`⚡ Closing Soon (< 7 Days): ${closingSoonCount}`);
 console.log(`🔴 Closed Tenders: ${closedCount}`);
 console.log(`📍 Distinct Counties Covered: ${counties.size}`);
 console.log(`🏷️ AGPO Reserved Tenders: ${tenders.length - (agpoCounts['Open'] || 0)} notices`);

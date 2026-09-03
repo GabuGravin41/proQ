@@ -34,9 +34,13 @@ export default function LandingPage() {
       <section className="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28 border-b border-border bg-gradient-to-b from-primary/5 via-transparent to-transparent">
         <div className="max-w-6xl mx-auto px-4 lg:px-8 text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/40 text-emerald-800 dark:text-emerald-300 text-xs font-bold mb-6">
-            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-            500+ Verified Public Tenders · KES 24.7B Pipeline across 47 Counties
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-muted/60 border border-border text-xs text-foreground font-medium mb-6">
+            <span className="w-2 h-2 rounded-full bg-emerald-600 dark:bg-emerald-400" />
+            <span>500+ Verified Public Tenders</span>
+            <span className="text-muted-foreground">•</span>
+            <span className="font-semibold text-primary">KES 24.7B Pipeline</span>
+            <span className="text-muted-foreground">•</span>
+            <span>47 Counties</span>
           </div>
 
           {/* Main Headline */}

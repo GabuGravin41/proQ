@@ -105,11 +105,7 @@ export default function AITenderCopilotModal() {
         className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 px-4 py-3 rounded-full bg-primary text-primary-foreground font-bold text-xs shadow-elevated hover:bg-primary/90 hover:scale-105 active:scale-95 transition-all group"
         aria-label="Open proQ AI Tender Copilot"
       >
-        <span className="relative flex h-2.5 w-2.5">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-accent opacity-75" />
-          <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-accent" />
-        </span>
-        <Sparkles size={16} className="text-accent group-hover:rotate-12 transition-transform" />
+        <Sparkles size={16} className="text-accent" />
         <span className="hidden sm:inline">AI Bidding Copilot</span>
         <span className="sm:hidden">AI Copilot</span>
       </button>

@@ -17,7 +17,7 @@ export interface PlatformStats {
 export function calculatePlatformStats(tenders: Tender[] = mockTenders): PlatformStats {
   const enriched = tenders.map(t => enrichTenderWithLiveStatus(t));
   const active = enriched.filter(t => t.status === 'active' || t.status === 'closing-soon');
-  const closingSoon = enriched.filter(t => t.daysRemaining <= 3 && t.daysRemaining > 0);
+  const closingSoon = enriched.filter(t => t.daysRemaining <= 7 && t.daysRemaining > 0);
   
   const totalValue = active.reduce((sum, t) => sum + (t.estimatedValue ?? 0), 0);
   const counties = new Set(enriched.map(t => t.county));

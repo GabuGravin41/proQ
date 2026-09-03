@@ -40,9 +40,9 @@ export default function StatsBar({ tenders }: StatsBarProps) {
     },
     {
       id: 'stat-closing',
-      label: 'Closing Soon (< 3 Days)',
+      label: 'Closing Soon (< 7 Days)',
       value: `${stats.closingSoon} Urgent`,
-      sub: 'Action required before deadline',
+      sub: 'Action required for bid prep',
       Icon: AlertTriangle,
       color: 'text-danger',
       bgColor: 'bg-danger-bg border-danger/20',

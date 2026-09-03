@@ -38,13 +38,13 @@ export function calculateDaysRemaining(closingDateStr: string, closingTimeStr?: 
 /**
  * Resolves the live status of a tender based on real-time date calculation:
  * - 'closed': 0 or negative days remaining
- * - 'closing-soon': 1 to 3 days remaining
- * - 'active': 4 or more days remaining
+ * - 'closing-soon': 1 to 7 days remaining (Corporate bid preparation window)
+ * - 'active': 8 or more days remaining
  */
 export function getDynamicTenderStatus(closingDateStr: string, closingTimeStr?: string): LiveTenderStatus {
   const days = calculateDaysRemaining(closingDateStr, closingTimeStr);
   if (days <= 0) return 'closed';
-  if (days <= 3) return 'closing-soon';
+  if (days <= 7) return 'closing-soon';
   return 'active';
 }
 
@@ -62,8 +62,8 @@ export function formatClosingCountdown(closingDateStr: string, closingTimeStr?: 
   if (days === 1) {
     return 'Closes tomorrow (urgent)';
   }
-  if (days <= 3) {
-    return `Closing in ${days} days (urgent)`;
+  if (days <= 7) {
+    return `Closing in ${days} days (urgent prep)`;
   }
   return `${days} days remaining`;
 }

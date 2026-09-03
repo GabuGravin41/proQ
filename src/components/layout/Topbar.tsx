@@ -25,18 +25,15 @@ export default function Topbar() {
             </span>
           </Link>
 
-          {/* Live Catalog Counter Pill */}
+          {/* Live Catalog Counter Pill (Clean & Static, No Distracting Animations) */}
           <Link
             href="/"
-            className="hidden lg:flex items-center gap-2 px-2.5 py-1 rounded-full bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/40 text-emerald-800 dark:text-emerald-300 text-xs font-semibold hover:border-emerald-400 transition-colors"
+            className="hidden lg:flex items-center gap-2 px-3 py-1 rounded-full bg-muted/60 border border-border text-xs text-foreground hover:bg-muted transition-colors font-medium"
           >
-            <span className="relative flex h-2 w-2">
-              <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-500 opacity-75" />
-              <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-600" />
-            </span>
+            <span className="w-2 h-2 rounded-full bg-emerald-600 dark:bg-emerald-400" />
             <span>500 Live Tenders</span>
-            <span className="text-emerald-400 dark:text-emerald-600">•</span>
-            <span className="font-bold">KES 24.7B Value</span>
+            <span className="text-muted-foreground">•</span>
+            <span className="font-semibold text-primary">KES 24.7B Value</span>
           </Link>
         </div>
 
