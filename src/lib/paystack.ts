@@ -27,7 +27,7 @@ const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY || '';
 const PAYSTACK_BASE_URL = 'https://api.paystack.co';
 
 export async function initializePaystackTransaction(params: PaystackInitParams): Promise<PaystackInitResponse> {
-  const reference = `TIQ-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
+  const reference = `PROQ-${Date.now()}-${Math.floor(Math.random() * 100000)}`;
   const amountInCents = Math.round(params.amount * 100); // Paystack uses subunit (cents)
 
   if (PAYSTACK_SECRET_KEY) {
@@ -43,8 +43,8 @@ export async function initializePaystackTransaction(params: PaystackInitParams):
           amount: amountInCents,
           currency: 'KES',
           reference: reference,
-          callback_url: params.callbackUrl || 'https://tenderiq.co.ke/pricing?payment=success',
-          channels: ['card', 'mpesa', 'bank_transfer'],
+          callback_url: params.callbackUrl || 'https://proq.co.ke/pricing?payment=success',
+          channels: ['card', 'mpesa', 'mobile_money'],
           metadata: {
             plan_id: params.planId,
             user_id: params.userId || 'guest',

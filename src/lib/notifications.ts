@@ -21,7 +21,7 @@ export interface TenderNotificationPayload {
 
 const AT_USERNAME = process.env.AFRICASTALKING_USERNAME || 'sandbox';
 const AT_APIKEY = process.env.AFRICASTALKING_API_KEY || '';
-const AT_SENDER_ID = process.env.AFRICASTALKING_SENDER_ID || 'TENDERIQ';
+const AT_SENDER_ID = process.env.AFRICASTALKING_SENDER_ID || 'PROQ';
 
 const WHATSAPP_API_TOKEN = process.env.WHATSAPP_API_TOKEN || '';
 const WHATSAPP_PHONE_NUMBER_ID = process.env.WHATSAPP_PHONE_NUMBER_ID || '';
@@ -31,18 +31,36 @@ export function formatTenderAlertMessage(payload: TenderNotificationPayload): st
     ? `KES ${payload.estimatedValue.toLocaleString()}`
     : 'Not Specified';
 
-  return `🔔 *TenderIQ Hot Fit Alert (${payload.matchScore}% Match)*
+  return `🔔 *proQ Kenya Verified Tender Match (${payload.matchScore}% Fit)*
 
 *Entity:* ${payload.procuringEntity}
 *Tender:* ${payload.referenceNumber} — ${payload.tenderTitle}
 *County:* ${payload.county}
-*Est. Value:* ${valueFormatted}
-*Deadline:* ${payload.daysLeft} Days Remaining
+*Est. Budget:* ${valueFormatted}
+*Deadline:* ${payload.daysLeft} Days Remaining (Urgent)
 
 📑 *Action:* View BOQ, checklist & verified portal:
-https://tenderiq.co.ke/tender/${payload.tenderId}
+https://proq.co.ke/tender-detail?id=${payload.tenderId}
 
-_Reply STOP to pause WhatsApp alerts_`;
+_proQ Kenya Public Procurement Intelligence_`;
+}
+
+/**
+ * Generates a 100% FREE 1-Click WhatsApp Share Link
+ * Enables contractors to forward tender notices directly to their team/partners without Meta API costs!
+ */
+export function generateWhatsAppShareUrl(tender: { id: string; title: string; procuringEntity: string; referenceNumber: string; estimatedValue?: number | null; daysRemaining: number; county: string }): string {
+  const text = `🔔 *proQ Kenya Verified Tender Alert*\n\n` +
+    `*Entity:* ${tender.procuringEntity}\n` +
+    `*Title:* ${tender.title}\n` +
+    `*Ref:* ${tender.referenceNumber}\n` +
+    `*County:* ${tender.county}\n` +
+    `*Budget:* ${tender.estimatedValue ? `KES ${tender.estimatedValue.toLocaleString()}` : 'Undisclosed'}\n` +
+    `*Deadline:* ${tender.daysRemaining} days remaining\n\n` +
+    `👉 View BOQ & Preliminary Checklist on proQ:\n` +
+    `https://proq.co.ke/tender-detail?id=${tender.id}`;
+
+  return `https://wa.me/?text=${encodeURIComponent(text)}`;
 }
 
 export async function sendSmsNotification(phone: string, message: string): Promise<{ success: boolean; messageId?: string; error?: string }> {

@@ -66,29 +66,50 @@ function ChannelRow({ icon, label, description, enabled, onToggle, children, pro
   );
 }
 
+import { useAuth } from '@/lib/authContext';
+
 export default function NotificationPreferencesPage() {
-  const isSubscriber = true; // Simulate subscriber
+  const { user, isSubscriber } = useAuth();
 
   const [prefs, setPrefs] = useState({
     email: true,
     whatsapp: true,
-    telegram: true,
-    sms: false,
+    telegram: false,
+    sms: isSubscriber,
     realTime: true,
     digest: false,
     hotFitOnly: false,
     digestTime: '07:00',
-    whatsappNumber: '+254712345678',
-    telegramHandle: '@kipchoge_ruto',
-    smsNumber: '',
-    emailAddress: 'kipchoge.ruto@buildright.co.ke',
+    whatsappNumber: user?.phone || '+254712345678',
+    telegramHandle: '',
+    smsNumber: user?.phone || '',
+    emailAddress: user?.email || 'contractor@proq.co.ke',
   });
 
+  // Load from local storage
+  React.useEffect(() => {
+    try {
+      const saved = localStorage.getItem('proq_notification_prefs');
+      if (saved) {
+        setPrefs(prev => ({ ...prev, ...JSON.parse(saved) }));
+      }
+    } catch {}
+  }, []);
+
   const update = (key: keyof typeof prefs, value: boolean | string) => {
-    setPrefs(prev => ({ ...prev, [key]: value }));
+    setPrefs(prev => {
+      const updated = { ...prev, [key]: value };
+      try {
+        localStorage.setItem('proq_notification_prefs', JSON.stringify(updated));
+      } catch {}
+      return updated;
+    });
   };
 
   const handleSave = () => {
+    try {
+      localStorage.setItem('proq_notification_prefs', JSON.stringify(prefs));
+    } catch {}
     toast.success('Notification preferences saved successfully');
   };
 
@@ -98,7 +119,7 @@ export default function NotificationPreferencesPage() {
       <div className="mb-6">
         <h1 className="text-2xl font-extrabold text-foreground">Notification Preferences</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Control how and when TenderIQ alerts you about new matching opportunities.
+          Control how and when proQ alerts you about new matching public opportunities across Kenya.
         </p>
       </div>
 
