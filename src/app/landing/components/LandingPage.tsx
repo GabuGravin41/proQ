@@ -34,9 +34,9 @@ export default function LandingPage() {
       <section className="relative overflow-hidden pt-12 pb-20 lg:pt-20 lg:pb-28 border-b border-border bg-gradient-to-b from-primary/5 via-transparent to-transparent">
         <div className="max-w-6xl mx-auto px-4 lg:px-8 text-center">
           {/* Badge */}
-          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-bold mb-6">
-            <span className="w-2 h-2 rounded-full bg-success animate-pulse" />
-            500+ Active Public Tenders Indexed Daily Across All 47 Counties
+          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/30 border border-emerald-200 dark:border-emerald-800/40 text-emerald-800 dark:text-emerald-300 text-xs font-bold mb-6">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            500+ Verified Public Tenders · KES 24.7B Pipeline across 47 Counties
           </div>
 
           {/* Main Headline */}
@@ -95,16 +95,16 @@ export default function LandingPage() {
             <p className="text-xs text-muted-foreground mt-1">Verified Active Tenders</p>
           </div>
           <div>
-            <p className="text-3xl font-extrabold text-foreground font-tabular">47</p>
-            <p className="text-xs text-muted-foreground mt-1">Counties Monitored</p>
+            <p className="text-3xl font-extrabold text-foreground font-tabular">KES 24.7B</p>
+            <p className="text-xs text-muted-foreground mt-1">Total Pipeline Value</p>
           </div>
           <div>
-            <p className="text-3xl font-extrabold text-foreground font-tabular">KES 26.4B</p>
-            <p className="text-xs text-muted-foreground mt-1">Active Pipeline Value</p>
+            <p className="text-3xl font-extrabold text-emerald-600 font-tabular">224 Lots</p>
+            <p className="text-xs text-muted-foreground mt-1">AGPO Reserved (Youth/Women/PWD)</p>
           </div>
           <div>
-            <p className="text-3xl font-extrabold text-primary font-tabular">07:00 EAT</p>
-            <p className="text-xs text-muted-foreground mt-1">Daily WhatsApp Alert Dispatch</p>
+            <p className="text-3xl font-extrabold text-foreground font-tabular">47 Counties</p>
+            <p className="text-xs text-muted-foreground mt-1">Monitored Nationwide</p>
           </div>
         </div>
       </section>
@@ -113,7 +113,7 @@ export default function LandingPage() {
       <section className="py-16 lg:py-24 border-b border-border">
         <div className="max-w-6xl mx-auto px-4 lg:px-8">
           <div className="text-center max-w-2xl mx-auto mb-14">
-            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">How TenQ Accelerates Your Bidding</h2>
+            <h2 className="text-2xl sm:text-3xl font-bold text-foreground mb-3">How proQ Accelerates Your Bidding</h2>
             <p className="text-sm text-muted-foreground">
               Everything you need to discover high-value procurement opportunities before competitors:
             </p>
