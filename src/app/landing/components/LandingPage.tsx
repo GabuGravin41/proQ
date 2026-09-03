@@ -36,9 +36,9 @@ export default function LandingPage() {
           {/* Badge */}
           <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-muted/60 border border-border text-xs text-foreground font-medium mb-6">
             <span className="w-2 h-2 rounded-full bg-emerald-600 dark:bg-emerald-400" />
-            <span>1,000+ Verified Public Tenders</span>
+            <span>1,500+ Verified Public Tenders</span>
             <span className="text-muted-foreground">•</span>
-            <span className="font-semibold text-primary">KES 48.5B Pipeline</span>
+            <span className="font-semibold text-primary">KES 72.0B Pipeline</span>
             <span className="text-muted-foreground">•</span>
             <span>47 Counties</span>
           </div>
@@ -95,15 +95,15 @@ export default function LandingPage() {
       <section className="border-b border-border bg-card py-8">
         <div className="max-w-6xl mx-auto px-4 lg:px-8 grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
           <div>
-            <p className="text-3xl font-extrabold text-primary font-tabular">1,000+</p>
+            <p className="text-3xl font-extrabold text-primary font-tabular">1,500+</p>
             <p className="text-xs text-muted-foreground mt-1">Verified Active Tenders</p>
           </div>
           <div>
-            <p className="text-3xl font-extrabold text-foreground font-tabular">KES 48.5B</p>
+            <p className="text-3xl font-extrabold text-foreground font-tabular">KES 72.0B</p>
             <p className="text-xs text-muted-foreground mt-1">Total Pipeline Value</p>
           </div>
           <div>
-            <p className="text-3xl font-extrabold text-emerald-600 font-tabular">474 Lots</p>
+            <p className="text-3xl font-extrabold text-emerald-600 font-tabular">724 Lots</p>
             <p className="text-xs text-muted-foreground mt-1">AGPO Reserved (Youth/Women/PWD)</p>
           </div>
           <div>
