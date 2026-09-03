@@ -1,10 +1,21 @@
 import { NextResponse } from 'next/server';
-import { searchTendersWithAI, explainTenderWithAI } from '@/lib/tenderMetadata';
+import { searchTendersWithAI, explainTenderWithAI, generateAdvisorConversation } from '@/lib/tenderMetadata';
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { action, query, profile, tenderId } = body;
+    const { action, query, message, history, profile, tenderId } = body;
+
+    // Conversational Chat Action
+    if (action === 'chat') {
+      const prompt = message || query || '';
+      const response = generateAdvisorConversation(prompt, history || []);
+      return NextResponse.json({
+        success: true,
+        action: 'chat',
+        ...response,
+      });
+    }
 
     if (action === 'explain') {
       if (!tenderId) {

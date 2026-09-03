@@ -368,3 +368,96 @@ export function explainTenderWithAI(tenderId: string): TenderAIMetadata | null {
   const found = allTenders.find(t => t.id.toLowerCase() === tenderId.toLowerCase());
   return found || null;
 }
+
+export interface AdvisorChatResponse {
+  message: string;
+  suggestedTenders: AIMatchResult[];
+  clarifyingOptions?: string[];
+}
+
+/**
+ * Conversational AI Procurement Advisor
+ * Understands natural user descriptions, asks clarifying questions when underspecified,
+ * and attaches tailored tender recommendations directly into the conversation stream.
+ */
+export function generateAdvisorConversation(userPrompt: string, history: { role: string; content: string }[] = []): AdvisorChatResponse {
+  const trimmed = userPrompt.trim().toLowerCase();
+
+  // 1. Check for Bid Bond / Disqualification / Statutory Inquiries
+  if (trimmed.includes('bid bond') || trimmed.includes('tender security') || trimmed.includes('150 day')) {
+    const matches = searchTendersWithAI({ userPrompt: 'open national tender', limit: 3 });
+    return {
+      message: `Under Kenyan law (**PPADA 2015 Section 80**), a standard bid bond must remain valid for **at least 30 days beyond the tender validity period** (typically $120 + 30 = 150\\text{ days}$ from opening date). Submitting a 120-day guarantee is one of the leading causes of Stage 1 preliminary disqualification.
+
+💡 **Crucial Exception**: If you are bidding under **AGPO (Youth, Women, or PWD)**, you are legally exempt from submitting a cash/bank bid bond under Section 157. You must submit a duly completed and witnessed **Tender Securing Declaration Form** instead.
+
+Would you like me to find AGPO-reserved tenders in your field, or calculate bid bond validity for a specific tender?`,
+      suggestedTenders: matches,
+      clarifyingOptions: [
+        'Find AGPO Youth tenders (Zero Bid Bond)',
+        'Find AGPO Women tenders',
+        'Roads & Civil Works tenders',
+        'Check tender statutory checklist'
+      ]
+    };
+  }
+
+  // 2. Underspecified / Broad queries ("which tenders do you think", "help me", "what tenders")
+  const isVague = trimmed.length < 15 ||
+    trimmed === 'which tenders do you think' ||
+    trimmed.startsWith('which tenders') ||
+    trimmed.includes('what tenders') ||
+    trimmed.includes('help me find') ||
+    trimmed === 'hello' ||
+    trimmed === 'hi';
+
+  if (isVague) {
+    const previewMatches = searchTendersWithAI({ userPrompt: '', limit: 3 });
+    return {
+      message: `I'd love to help you find and win contracts! Because we track over **3,000 active public tenders across all 47 counties**, I want to make sure I suggest opportunities you can realistically win.
+
+Could you tell me a little bit about your setup:
+1. **What does your company supply or build?** *(e.g. Road civil works, solar water pumps, pharmaceuticals, ICT & laptops, or cleaning?)*
+2. **Do you have an AGPO certificate?** *(Youth, Women, or PWD can access 30% reserved tenders with NO cash bid bond)*
+3. **Which counties or state agencies do you prefer targeting?**
+
+Or tap one of the common sectors below to get started:`,
+      suggestedTenders: previewMatches,
+      clarifyingOptions: [
+        'AGPO Youth opportunities under KES 25M',
+        'Roads & Spot Improvement in Rift Valley',
+        'Solar Water Boreholes in ASAL Counties',
+        'Medical Supplies & Laboratory Reagents',
+        'ICT Hardware & Cloud Services'
+      ]
+    };
+  }
+
+  // 3. User described their needs (Keywords present)
+  const matches = searchTendersWithAI({ userPrompt, limit: 4 });
+
+  // Synthesize tailored context
+  let responseText = '';
+  if (trimmed.includes('youth') || trimmed.includes('women') || trimmed.includes('agpo')) {
+    responseText = `Here are active **AGPO-reserved opportunities** matching your description. Under the 30% statutory quota, these tenders are exempt from cash bid bonds—you only need to attach your valid National Treasury AGPO certificate and a signed Tender Securing Declaration Form:\n\n`;
+  } else if (trimmed.includes('road') || trimmed.includes('culvert') || trimmed.includes('civil')) {
+    responseText = `I've analyzed active **civil infrastructure and road works** notices. For these works, ensure you have your NCA registration (Roads category) and plan ahead for any mandatory pre-bid site visits to collect the signed engineer's certificate:\n\n`;
+  } else if (trimmed.includes('water') || trimmed.includes('borehole') || trimmed.includes('solar')) {
+    responseText = `Here are active **water reticulation, solar pumping, and borehole drilling** tenders matching your request across the monitored counties:\n\n`;
+  } else if (trimmed.includes('medical') || trimmed.includes('hospital') || trimmed.includes('pharma')) {
+    responseText = `Here are open **healthcare, medical equipment, and pharmaceuticals** opportunities across referral hospitals and county health departments:\n\n`;
+  } else {
+    responseText = `Based on your description, I searched through our verified catalog and found **${matches.length} high-fit procurement opportunities**. Here are the most relevant active tenders with upcoming deadlines:\n\n`;
+  }
+
+  return {
+    message: responseText,
+    suggestedTenders: matches,
+    clarifyingOptions: [
+      'Show tenders closing this week',
+      'Filter for AGPO Youth only',
+      'Show tenders under KES 50M',
+      'Check preliminary requirements'
+    ]
+  };
+}

@@ -1,67 +1,148 @@
 'use client';
 import React, { useState, useEffect, useRef } from 'react';
 import { useAuth } from '@/lib/authContext';
-import { searchTendersWithAI, explainTenderWithAI, AIMatchResult, TenderAIMetadata } from '@/lib/tenderMetadata';
+import AppLogo from '@/components/ui/AppLogo';
+import { explainTenderWithAI, AIMatchResult, TenderAIMetadata } from '@/lib/tenderMetadata';
 import {
-  Sparkles, X, Search, Mic, MicOff, AlertTriangle, CheckCircle2,
+  X, Send, Mic, MicOff, AlertTriangle, CheckCircle2,
   ExternalLink, Building2, MapPin, Clock, ArrowRight, ShieldAlert,
-  ChevronRight, FileText, Send, RefreshCw, BadgeCheck
+  ChevronRight, FileText, RotateCcw, Sparkles
 } from 'lucide-react';
 import Link from 'next/link';
 
+interface ChatMessage {
+  id: string;
+  sender: 'user' | 'ai';
+  text: string;
+  timestamp: string;
+  suggestedTenders?: AIMatchResult[];
+  clarifyingOptions?: string[];
+}
+
 export default function AITenderCopilotModal() {
-  const { user, isSubscriber } = useAuth();
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'search' | 'explain'>('search');
-  const [query, setQuery] = useState('');
+  const [inputQuery, setInputQuery] = useState('');
   const [isListening, setIsListening] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [matches, setMatches] = useState<AIMatchResult[]>([]);
   const [selectedTender, setSelectedTender] = useState<TenderAIMetadata | null>(null);
-  const recognitionRef = useRef<any>(null);
 
-  // Initialize with recommendations based on user profile
+  const recognitionRef = useRef<any>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  // Conversation history
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+
+  // Initialize initial greeting when opened
   useEffect(() => {
-    if (isOpen && matches.length === 0) {
-      runSearch('');
+    if (isOpen && messages.length === 0) {
+      const initialGreeting: ChatMessage = {
+        id: 'msg-welcome',
+        sender: 'ai',
+        text: `Habari! I am your **proQ AI Procurement Advisor**.\n\nMost contractors don't start with a tender reference number—they have a business, a crew, and capital. Tell me what you supply or build in your own words, and I'll help clarify your requirements and pinpoint the exact active tenders you can win.`,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        clarifyingOptions: [
+          'AGPO Youth road maintenance under KES 25M',
+          'We supply medical reagents & PPE',
+          'Solar community boreholes in ASAL counties',
+          'ICT hardware & software supply in Nairobi'
+        ]
+      };
+      setMessages([initialGreeting]);
     }
   }, [isOpen]);
 
-  const runSearch = (searchQuery: string) => {
+  // Auto-scroll to bottom of conversation
+  useEffect(() => {
+    if (isOpen) {
+      messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [messages, loading]);
+
+  // Send message to AI
+  const handleSendMessage = async (textToSend?: string) => {
+    const prompt = (textToSend || inputQuery).trim();
+    if (!prompt || loading) return;
+
+    const userMsgId = `user-${Date.now()}`;
+    const userMsg: ChatMessage = {
+      id: userMsgId,
+      sender: 'user',
+      text: prompt,
+      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+    };
+
+    setMessages(prev => [...prev, userMsg]);
+    setInputQuery('');
     setLoading(true);
-    setTimeout(() => {
-      const results = searchTendersWithAI({
-        userPrompt: searchQuery,
-        profile: {
-          capabilities: user?.capabilities,
-          targetSectors: user?.targetSectors,
-          targetCounties: user?.targetCounties,
-          minBudget: user?.minBudget,
-          maxBudget: user?.maxBudget,
-          agpoStatus: user?.agpoStatus,
-        },
-        limit: 15,
+
+    try {
+      const history = messages.map(m => ({
+        role: m.sender === 'user' ? 'user' : 'assistant',
+        content: m.text,
+      }));
+
+      const res = await fetch('/api/ai/tender-copilot', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          action: 'chat',
+          message: prompt,
+          history,
+          profile: {
+            capabilities: user?.capabilities,
+            targetSectors: user?.targetSectors,
+            targetCounties: user?.targetCounties,
+            minBudget: user?.minBudget,
+            maxBudget: user?.maxBudget,
+            agpoStatus: user?.agpoStatus,
+          },
+        }),
       });
-      setMatches(results);
+
+      const data = await res.json();
+      if (data.success) {
+        const aiMsg: ChatMessage = {
+          id: `ai-${Date.now()}`,
+          sender: 'ai',
+          text: data.message,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          suggestedTenders: data.suggestedTenders || [],
+          clarifyingOptions: data.clarifyingOptions || [],
+        };
+        setMessages(prev => [...prev, aiMsg]);
+      } else {
+        throw new Error(data.error || 'Failed to generate response');
+      }
+    } catch (err) {
+      const errorMsg: ChatMessage = {
+        id: `ai-err-${Date.now()}`,
+        sender: 'ai',
+        text: 'I ran into a temporary hiccup scanning the tender database. Please try rephrasing or tap one of the suggested categories.',
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+        clarifyingOptions: [
+          'Show AGPO Youth tenders',
+          'Roads & Civil Works',
+          'Water & Sanitation'
+        ]
+      };
+      setMessages(prev => [...prev, errorMsg]);
+    } finally {
       setLoading(false);
-    }, 150);
+    }
   };
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    runSearch(query);
+  const handleResetChat = () => {
+    setMessages([]);
+    setSelectedTender(null);
+    setInputQuery('');
   };
 
-  const handleQuickPrompt = (prompt: string) => {
-    setQuery(prompt);
-    runSearch(prompt);
-  };
-
-  const handleExplain = (tenderId: string) => {
-    const explanation = explainTenderWithAI(tenderId);
-    if (explanation) {
-      setSelectedTender(explanation);
-      setActiveTab('explain');
+  // Inspect pre-bid breakdown for a tender
+  const handleInspectTender = (tenderId: string) => {
+    const detail = explainTenderWithAI(tenderId);
+    if (detail) {
+      setSelectedTender(detail);
     }
   };
 
@@ -83,9 +164,9 @@ export default function AITenderCopilotModal() {
       recognition.onstart = () => setIsListening(true);
       recognition.onresult = (event: any) => {
         const transcript = event.results[0][0].transcript;
-        setQuery(transcript);
-        runSearch(transcript);
+        setInputQuery(transcript);
         setIsListening(false);
+        handleSendMessage(transcript);
       };
       recognition.onerror = () => setIsListening(false);
       recognition.onend = () => setIsListening(false);
@@ -93,374 +174,354 @@ export default function AITenderCopilotModal() {
       recognitionRef.current = recognition;
       recognition.start();
     } else {
-      alert('Speech recognition is not supported by your current browser.');
+      alert('Speech recognition is not supported in this browser.');
     }
   };
 
   return (
     <>
-      {/* Floating Trigger Button */}
+      {/* Floating Trigger Button with Official proQ Logo */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 px-4 py-3 rounded-full bg-primary text-primary-foreground font-bold text-xs shadow-elevated hover:bg-primary/90 hover:scale-105 active:scale-95 transition-all group"
-        aria-label="Open proQ AI Tender Copilot"
+        className="fixed bottom-6 right-6 z-40 flex items-center gap-2.5 px-3.5 py-2 rounded-full bg-card border-2 border-primary/30 hover:border-primary text-foreground font-bold text-xs shadow-modal hover:shadow-elevated hover:scale-105 active:scale-95 transition-all group"
+        aria-label="Open proQ AI Advisor"
       >
-        <Sparkles size={16} className="text-accent" />
-        <span className="hidden sm:inline">AI Bidding Copilot</span>
-        <span className="sm:hidden">AI Copilot</span>
+        <AppLogo size={22} />
+        <span className="font-extrabold text-foreground tracking-tight text-xs">
+          pro<span className="text-primary">Q</span> Advisor
+        </span>
+        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
       </button>
 
-      {/* Modal / Drawer Backdrop */}
+      {/* Main Conversational Modal */}
       {isOpen && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-3 sm:p-6 animate-fade-in">
+          {/* Backdrop */}
           <div
             className="fixed inset-0 bg-foreground/30 backdrop-blur-sm"
             onClick={() => setIsOpen(false)}
           />
 
-          <div className="relative w-full max-w-3xl bg-card border border-border rounded-2xl shadow-modal flex flex-col max-h-[90vh] overflow-hidden animate-scale-in">
+          <div className="relative w-full max-w-3xl bg-card border border-border rounded-2xl shadow-modal flex flex-col h-[680px] max-h-[90vh] overflow-hidden">
             {/* Header */}
-            <div className="flex items-center justify-between p-4 sm:px-6 border-b border-border bg-muted/40">
-              <div className="flex items-center gap-2.5">
-                <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center">
-                  <Sparkles size={18} className="text-accent" />
-                </div>
+            <div className="flex items-center justify-between px-5 py-3.5 border-b border-border bg-muted/40 shrink-0">
+              <div className="flex items-center gap-3">
+                <AppLogo size={28} />
                 <div>
                   <div className="flex items-center gap-2">
-                    <h3 className="font-bold text-sm text-foreground">proQ AI Bidding Copilot</h3>
-                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-accent/15 text-accent">
-                      Smart Assistant
+                    <h3 className="font-extrabold text-sm text-foreground tracking-tight">
+                      pro<span className="text-primary">Q</span> AI Advisor
+                    </h3>
+                    <span className="inline-flex items-center gap-1 text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800/40">
+                      <span className="w-1.5 h-1.5 rounded-full bg-emerald-600" />
+                      3,000 Live Notices
                     </span>
                   </div>
                   <p className="text-[11px] text-muted-foreground">
-                    Matches company profile, explains tender requirements & shields against disqualification
+                    Conversational procurement matching & disqualification protection
                   </p>
                 </div>
               </div>
-              <button
-                onClick={() => setIsOpen(false)}
-                className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-              >
-                <X size={18} />
-              </button>
+
+              <div className="flex items-center gap-1.5">
+                <button
+                  onClick={handleResetChat}
+                  title="Reset conversation"
+                  className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors text-xs flex items-center gap-1"
+                >
+                  <RotateCcw size={14} />
+                  <span className="hidden sm:inline text-[11px]">New Chat</span>
+                </button>
+                <button
+                  onClick={() => setIsOpen(false)}
+                  className="p-1.5 rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                >
+                  <X size={18} />
+                </button>
+              </div>
             </div>
 
-            {/* Navigation Tabs */}
-            <div className="flex border-b border-border bg-card px-4 sm:px-6 gap-6 text-xs font-semibold">
-              <button
-                onClick={() => setActiveTab('search')}
-                className={`py-3 border-b-2 transition-all flex items-center gap-2 ${
-                  activeTab === 'search'
-                    ? 'border-emerald-600 text-emerald-700 font-bold'
-                    : 'border-transparent text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                <Search size={14} />
-                Find Matching Tenders
-              </button>
-              <button
-                onClick={() => {
-                  if (selectedTender) setActiveTab('explain');
-                  else if (matches.length > 0) handleExplain(matches[0].metadata.id);
-                }}
-                className={`py-3 border-b-2 transition-all flex items-center gap-2 ${
-                  activeTab === 'explain'
-                    ? 'border-emerald-600 text-emerald-700 font-bold'
-                    : 'border-transparent text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                <ShieldAlert size={14} />
-                Tender Breakdown & Watch-Outs
-                {selectedTender && (
-                  <span className="px-1.5 py-0.5 rounded text-[10px] bg-primary/10 text-primary">
-                    Selected
-                  </span>
-                )}
-              </button>
-            </div>
-
-            {/* Tab 1: AI Search & Profile Matching */}
-            {activeTab === 'search' && (
-              <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-4">
-                {/* Profile Context Banner */}
-                <div className="p-3 rounded-xl border border-border bg-muted/30 flex flex-wrap items-center justify-between gap-2 text-xs">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-foreground">Bidding Profile:</span>
-                    <span className="px-2 py-0.5 rounded bg-primary/10 text-primary font-medium">
-                      {user?.company || 'Standard Profile'}
-                    </span>
-                    <span className="px-2 py-0.5 rounded bg-emerald-50 text-emerald-700 font-medium">
-                      AGPO: {user?.agpoStatus || 'Open'}
-                    </span>
-                  </div>
-                  <Link
-                    href="/capability-profile"
-                    onClick={() => setIsOpen(false)}
-                    className="text-primary hover:underline text-[11px] font-medium"
+            {/* Conversation Stream */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
+              {messages.map((msg) => (
+                <div
+                  key={msg.id}
+                  className={`flex flex-col ${msg.sender === 'user' ? 'items-end' : 'items-start'}`}
+                >
+                  {/* Message Bubble */}
+                  <div
+                    className={`max-w-[90%] sm:max-w-[85%] rounded-2xl p-4 text-xs leading-relaxed ${
+                      msg.sender === 'user'
+                        ? 'bg-primary text-primary-foreground font-medium rounded-tr-none'
+                        : 'bg-muted/50 border border-border text-foreground rounded-tl-none space-y-3'
+                    }`}
                   >
-                    Edit Preferences →
-                  </Link>
-                </div>
-
-                {/* Natural Language Search Input */}
-                <form onSubmit={handleSearchSubmit} className="relative">
-                  <div className="relative flex items-center">
-                    <Search size={16} className="absolute left-3 text-muted-foreground" />
-                    <input
-                      type="text"
-                      value={query}
-                      onChange={e => setQuery(e.target.value)}
-                      placeholder="Ask AI: e.g. Solar water pumping tenders in Northern Kenya under 40M closing soon..."
-                      className="w-full pl-9 pr-20 py-2.5 rounded-xl border border-border bg-card text-xs text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary"
-                    />
-                    <div className="absolute right-2 flex items-center gap-1">
-                      <button
-                        type="button"
-                        onClick={toggleListening}
-                        className={`p-1.5 rounded-lg transition-colors ${
-                          isListening ? 'bg-danger text-white animate-pulse' : 'text-muted-foreground hover:bg-muted'
-                        }`}
-                        title={isListening ? 'Listening...' : 'Voice Search'}
-                      >
-                        {isListening ? <MicOff size={14} /> : <Mic size={14} />}
-                      </button>
-                      <button
-                        type="submit"
-                        className="p-1.5 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-                        title="Run AI Search"
-                      >
-                        <Send size={14} />
-                      </button>
+                    <div className="whitespace-pre-line">
+                      {msg.text}
                     </div>
-                  </div>
-                </form>
 
-                {/* Quick Prompts */}
-                <div className="flex items-center gap-1.5 flex-wrap">
-                  <span className="text-[10px] font-semibold text-muted-foreground">Quick queries:</span>
-                  {[
-                    'AGPO Youth opportunities closing this month',
-                    'Roads & Civil Works in Western Kenya',
-                    'Solar & Water borehole supply',
-                    'ICT & Cloud software tenders',
-                  ].map(prompt => (
-                    <button
-                      key={prompt}
-                      onClick={() => handleQuickPrompt(prompt)}
-                      className="text-[10px] px-2 py-1 rounded-full border border-border bg-card hover:bg-muted text-foreground transition-all"
-                    >
-                      {prompt}
-                    </button>
+                    {/* Clarifying Clickable Options */}
+                    {msg.clarifyingOptions && msg.clarifyingOptions.length > 0 && (
+                      <div className="pt-2 border-t border-border/50">
+                        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider mb-2">
+                          Suggested Options & Next Steps:
+                        </p>
+                        <div className="flex flex-wrap gap-1.5">
+                          {msg.clarifyingOptions.map((opt, idx) => (
+                            <button
+                              key={idx}
+                              onClick={() => handleSendMessage(opt)}
+                              className="text-left px-2.5 py-1.5 rounded-lg bg-card hover:bg-secondary text-foreground text-[11px] font-medium border border-border/70 hover:border-primary/50 transition-all flex items-center gap-1.5"
+                            >
+                              <span>{opt}</span>
+                              <ArrowRight size={11} className="text-primary shrink-0" />
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+
+                    {/* Inline Matched Tender Cards */}
+                    {msg.suggestedTenders && msg.suggestedTenders.length > 0 && (
+                      <div className="pt-2 border-t border-border/50 space-y-2">
+                        <p className="text-[11px] font-bold text-foreground flex items-center gap-1.5">
+                          <CheckCircle2 size={13} className="text-emerald-600" />
+                          Matched Opportunities ({msg.suggestedTenders.length}):
+                        </p>
+                        <div className="grid grid-cols-1 gap-2">
+                          {msg.suggestedTenders.map((result) => (
+                            <div
+                              key={result.metadata.id}
+                              className="p-3 rounded-xl bg-card border border-border hover:border-primary/40 transition-all space-y-1.5 shadow-sm"
+                            >
+                              <div className="flex items-center justify-between gap-2 flex-wrap">
+                                <span className="font-mono text-[10px] text-muted-foreground font-bold">
+                                  {result.metadata.referenceNumber}
+                                </span>
+                                <div className="flex items-center gap-1.5">
+                                  <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full ${
+                                    result.badge === 'Hot Fit'
+                                      ? 'bg-emerald-50 text-emerald-700 dark:bg-emerald-950/30 dark:text-emerald-300'
+                                      : 'bg-primary/10 text-primary'
+                                  }`}>
+                                    {result.badge} ({result.matchScore}%)
+                                  </span>
+                                  {result.metadata.intelligence.isAgpoReserved && (
+                                    <span className="text-[10px] font-bold px-2 py-0.5 rounded-full bg-amber-50 text-amber-700 dark:bg-amber-950/30 dark:text-amber-300">
+                                      AGPO {result.metadata.intelligence.agpoType}
+                                    </span>
+                                  )}
+                                </div>
+                              </div>
+
+                              <h4 className="font-bold text-foreground text-xs leading-snug line-clamp-2">
+                                {result.metadata.title}
+                              </h4>
+
+                              <div className="flex items-center gap-3 text-[11px] text-muted-foreground flex-wrap pt-0.5">
+                                <span className="flex items-center gap-1">
+                                  <Building2 size={12} />
+                                  {result.metadata.procuringEntity}
+                                </span>
+                                <span className="flex items-center gap-1">
+                                  <MapPin size={12} />
+                                  {result.metadata.county}
+                                </span>
+                                <span className="flex items-center gap-1 font-semibold text-emerald-700 dark:text-emerald-400">
+                                  <Clock size={12} />
+                                  {result.metadata.liveCountdown}
+                                </span>
+                              </div>
+
+                              <div className="pt-2 flex items-center justify-between border-t border-border/40 text-[11px]">
+                                <span className="font-extrabold text-foreground font-tabular">
+                                  {result.metadata.estimatedValue
+                                    ? `KES ${(result.metadata.estimatedValue).toLocaleString()}`
+                                    : 'Undisclosed'}
+                                </span>
+                                <div className="flex items-center gap-2">
+                                  <button
+                                    onClick={() => handleInspectTender(result.metadata.id)}
+                                    className="px-2 py-1 rounded-md bg-secondary hover:bg-muted text-foreground text-[11px] font-semibold flex items-center gap-1"
+                                  >
+                                    <ShieldAlert size={12} className="text-primary" />
+                                    Pre-Bid Check
+                                  </button>
+                                  <Link
+                                    href={`/tender-detail?id=${result.metadata.id}`}
+                                    onClick={() => setIsOpen(false)}
+                                    className="px-2 py-1 rounded-md bg-primary text-primary-foreground text-[11px] font-semibold flex items-center gap-1"
+                                  >
+                                    View Tender
+                                    <ExternalLink size={11} />
+                                  </Link>
+                                </div>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  <span className="text-[10px] text-muted-foreground mt-1 px-1">
+                    {msg.timestamp}
+                  </span>
+                </div>
+              ))}
+
+              {/* Typing Indicator */}
+              {loading && (
+                <div className="flex items-start gap-2.5">
+                  <div className="p-3 rounded-2xl rounded-tl-none bg-muted/60 border border-border flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-primary animate-ping" />
+                    <span className="text-xs text-muted-foreground font-medium">
+                      proQ Advisor is analyzing 3,000 public tenders...
+                    </span>
+                  </div>
+                </div>
+              )}
+
+              <div ref={messagesEndRef} />
+            </div>
+
+            {/* Input Bar */}
+            <div className="p-3 sm:p-4 border-t border-border bg-card shrink-0 space-y-2">
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  handleSendMessage();
+                }}
+                className="relative flex items-center bg-muted/40 border border-border rounded-xl focus-within:border-primary focus-within:bg-card transition-all p-1"
+              >
+                <input
+                  type="text"
+                  value={inputQuery}
+                  onChange={(e) => setInputQuery(e.target.value)}
+                  placeholder="Describe your business, ask for tenders, or ask a pre-bid compliance question..."
+                  className="w-full bg-transparent px-3 py-2 text-xs focus:outline-none text-foreground placeholder:text-muted-foreground"
+                />
+
+                <div className="flex items-center gap-1 mr-1">
+                  {/* Voice Button */}
+                  <button
+                    type="button"
+                    onClick={toggleListening}
+                    className={`p-2 rounded-lg transition-colors ${
+                      isListening
+                        ? 'bg-danger text-danger-foreground animate-pulse'
+                        : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                    }`}
+                    title={isListening ? 'Listening...' : 'Dictate by voice'}
+                  >
+                    {isListening ? <MicOff size={16} /> : <Mic size={16} />}
+                  </button>
+
+                  {/* Send Button */}
+                  <button
+                    type="submit"
+                    disabled={!inputQuery.trim() || loading}
+                    className="p-2 rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 disabled:opacity-40 transition-all"
+                  >
+                    <Send size={15} />
+                  </button>
+                </div>
+              </form>
+
+              <div className="flex items-center justify-between text-[10px] text-muted-foreground px-1">
+                <span>Direct analysis from PPIP, e-GP Kenya & all 47 counties</span>
+                <span>Press Enter to chat</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Pre-Bid Inspection Drawer Modal */}
+      {selectedTender && (
+        <div className="fixed inset-0 z-60 flex items-center justify-center p-4 bg-foreground/40 backdrop-blur-sm animate-fade-in">
+          <div className="relative w-full max-w-2xl bg-card border border-border rounded-2xl shadow-modal overflow-hidden max-h-[85vh] flex flex-col">
+            <div className="p-4 border-b border-border bg-muted/40 flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <ShieldAlert size={18} className="text-primary" />
+                <h3 className="font-bold text-sm text-foreground">Pre-Bid Disqualification Audit</h3>
+              </div>
+              <button
+                onClick={() => setSelectedTender(null)}
+                className="p-1 rounded-md text-muted-foreground hover:bg-muted"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="p-5 overflow-y-auto space-y-4 text-xs">
+              <div>
+                <span className="font-mono text-[10px] text-muted-foreground font-bold">
+                  {selectedTender.referenceNumber}
+                </span>
+                <h4 className="font-bold text-sm text-foreground mt-0.5">
+                  {selectedTender.title}
+                </h4>
+                <p className="text-muted-foreground mt-1">
+                  Procuring Entity: <strong className="text-foreground">{selectedTender.procuringEntity}</strong> ({selectedTender.county} County)
+                </p>
+              </div>
+
+              {/* Critical Alerts */}
+              <div className="p-3.5 rounded-xl bg-danger-bg border border-danger/30 space-y-2">
+                <h5 className="font-bold text-danger flex items-center gap-1.5 text-xs">
+                  <AlertTriangle size={14} />
+                  Top Preliminary Disqualification Hazards:
+                </h5>
+                <ul className="list-disc pl-5 space-y-1 text-danger font-medium text-[11px]">
+                  <li>
+                    Bid Bond Validity: Must be valid for <strong>{selectedTender.intelligence.bidBondValidityDays} days</strong> from opening. Shorter validity results in immediate disqualification.
+                  </li>
+                  {selectedTender.intelligence.siteVisitRequired && (
+                    <li>
+                      Mandatory Site Visit Certificate required: You must physically attend with the county/agency engineer.
+                    </li>
+                  )}
+                  {selectedTender.intelligence.isAgpoReserved && (
+                    <li>
+                      AGPO Reserved ({selectedTender.intelligence.agpoType}): Must attach a valid National Treasury certificate and signed Tender Securing Declaration Form.
+                    </li>
+                  )}
+                </ul>
+              </div>
+
+              {/* Mandatory Checklist */}
+              <div className="space-y-2">
+                <h5 className="font-bold text-foreground text-xs">
+                  Statutory Preliminary Evaluation Checklist:
+                </h5>
+                <div className="space-y-1.5">
+                  {selectedTender.intelligence.mandatoryDocuments.map((doc, idx) => (
+                    <div key={idx} className="flex items-start gap-2 p-2 rounded-lg bg-muted/40 border border-border/60">
+                      <CheckCircle2 size={14} className="text-emerald-600 shrink-0 mt-0.5" />
+                      <span className="text-[11px] text-foreground">{doc}</span>
+                    </div>
                   ))}
                 </div>
-
-                {/* Matches List */}
-                <div className="space-y-3 pt-2">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold text-foreground">
-                      {loading ? 'Analyzing 500 notices...' : `AI Matched Tenders (${matches.length})`}
-                    </span>
-                    {loading && <RefreshCw size={12} className="animate-spin text-muted-foreground" />}
-                  </div>
-
-                  {matches.map(({ metadata, matchScore, matchReasons, badge }) => {
-                    const badgeClass =
-                      badge === 'Hot Fit'
-                        ? 'bg-rose-50 text-rose-700 border-rose-200'
-                        : badge === 'High Fit'
-                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
-                        : 'bg-amber-50 text-amber-700 border-amber-200';
-
-                    return (
-                      <div
-                        key={metadata.id}
-                        className="p-3.5 rounded-xl border border-border bg-card hover:border-primary/40 hover:shadow-card transition-all"
-                      >
-                        <div className="flex items-start justify-between gap-2 mb-1.5">
-                          <div className="flex items-center gap-2 flex-wrap">
-                            <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${badgeClass}`}>
-                              {badge} ({matchScore}%)
-                            </span>
-                            <span className="text-[10px] font-medium px-2 py-0.5 rounded bg-muted text-muted-foreground">
-                              {metadata.category}
-                            </span>
-                            <span className="text-[10px] font-semibold text-primary">
-                              {metadata.intelligence.agpoType}
-                            </span>
-                          </div>
-                          <span className="text-[11px] font-medium text-danger whitespace-nowrap">
-                            {metadata.liveCountdown}
-                          </span>
-                        </div>
-
-                        <h4 className="text-xs font-bold text-foreground leading-snug line-clamp-2 mb-1.5">
-                          {metadata.title}
-                        </h4>
-
-                        <div className="flex items-center gap-3 text-[11px] text-muted-foreground mb-2 flex-wrap">
-                          <span className="flex items-center gap-1">
-                            <Building2 size={12} /> {metadata.procuringEntity}
-                          </span>
-                          <span className="flex items-center gap-1">
-                            <MapPin size={12} /> {metadata.county} County
-                          </span>
-                          <span className="font-semibold text-foreground">
-                            {metadata.estimatedValue ? `KES ${(metadata.estimatedValue).toLocaleString()}` : 'Undisclosed'}
-                          </span>
-                        </div>
-
-                        {/* Match Reasons */}
-                        {matchReasons.length > 0 && (
-                          <div className="mb-2.5 p-2 rounded-lg bg-muted/40 text-[11px] text-muted-foreground space-y-0.5">
-                            {matchReasons.slice(0, 2).map((r, i) => (
-                              <div key={i} className="flex items-center gap-1 text-emerald-700 dark:text-emerald-400">
-                                <BadgeCheck size={11} className="shrink-0" />
-                                <span>{r}</span>
-                              </div>
-                            ))}
-                          </div>
-                        )}
-
-                        {/* Action Buttons */}
-                        <div className="flex items-center justify-between pt-1 border-t border-border">
-                          <button
-                            onClick={() => handleExplain(metadata.id)}
-                            className="text-xs font-semibold text-primary hover:text-primary/80 flex items-center gap-1"
-                          >
-                            <ShieldAlert size={13} />
-                            Explain Tender & Watch-Outs →
-                          </button>
-                          <Link
-                            href={`/tender/${metadata.id}`}
-                            onClick={() => setIsOpen(false)}
-                            className="text-xs text-muted-foreground hover:text-foreground flex items-center gap-1"
-                          >
-                            View Workspace <ChevronRight size={13} />
-                          </Link>
-                        </div>
-                      </div>
-                    );
-                  })}
-                </div>
               </div>
-            )}
+            </div>
 
-            {/* Tab 2: Deep Tender Breakdown & Disqualification Watch-Outs */}
-            {activeTab === 'explain' && selectedTender && (
-              <div className="flex-1 overflow-y-auto p-4 sm:p-6 space-y-5">
-                {/* Tender Header Banner */}
-                <div className="p-4 rounded-xl border border-border bg-muted/30">
-                  <div className="flex items-center justify-between gap-2 mb-1 text-[11px]">
-                    <span className="font-semibold text-primary">{selectedTender.referenceNumber}</span>
-                    <span className="font-bold text-danger">{selectedTender.liveCountdown}</span>
-                  </div>
-                  <h3 className="font-bold text-sm text-foreground mb-2 leading-snug">
-                    {selectedTender.title}
-                  </h3>
-                  <div className="flex items-center gap-3 text-xs text-muted-foreground flex-wrap">
-                    <span>{selectedTender.procuringEntity}</span>
-                    <span>•</span>
-                    <span>{selectedTender.county} County</span>
-                    <span>•</span>
-                    <span className="font-bold text-foreground">
-                      {selectedTender.estimatedValue ? `KES ${(selectedTender.estimatedValue).toLocaleString()}` : 'Undisclosed'}
-                    </span>
-                  </div>
-                </div>
-
-                {/* 1. Executive Summary */}
-                <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-foreground mb-1.5 flex items-center gap-1.5">
-                    <FileText size={14} className="text-primary" />
-                    AI Executive Scope Summary
-                  </h4>
-                  <p className="text-xs text-muted-foreground leading-relaxed p-3 rounded-xl bg-card border border-border">
-                    {selectedTender.aiExecutiveSummary}
-                  </p>
-                </div>
-
-                {/* 2. Preliminary Disqualification Shield & Watch-Outs */}
-                <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-danger mb-1.5 flex items-center gap-1.5">
-                    <ShieldAlert size={14} className="text-danger" />
-                    Critical Watch-Outs & Disqualification Hazards
-                  </h4>
-                  <div className="p-3.5 rounded-xl border border-danger/30 bg-danger-bg/40 space-y-2">
-                    {selectedTender.intelligence.keyRisks.map((risk, i) => (
-                      <div key={i} className="flex items-start gap-2 text-xs text-danger font-medium leading-relaxed">
-                        <AlertTriangle size={14} className="shrink-0 mt-0.5 text-danger" />
-                        <span>{risk}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 3. Mandatory Statutory Documents Required */}
-                <div>
-                  <h4 className="text-xs font-bold uppercase tracking-wider text-foreground mb-1.5 flex items-center gap-1.5">
-                    <CheckCircle2 size={14} className="text-emerald-600" />
-                    Mandatory Statutory Checklist (Preliminary Stage)
-                  </h4>
-                  <div className="p-3 rounded-xl border border-border bg-card space-y-1.5">
-                    {selectedTender.intelligence.mandatoryDocuments.map((doc, i) => (
-                      <div key={i} className="flex items-center gap-2 text-xs text-foreground">
-                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-600 shrink-0" />
-                        <span>{doc}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* 4. Application Venue & Steps */}
-                <div className="p-4 rounded-xl border border-primary/20 bg-primary/5 space-y-2.5">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h4 className="text-xs font-bold text-foreground">
-                        Submission Portal: {selectedTender.applicationGuidance.portalName}
-                      </h4>
-                      <p className="text-[11px] text-muted-foreground">
-                        Deadline: {selectedTender.applicationGuidance.hardDeadline}
-                      </p>
-                    </div>
-                    <a
-                      href={selectedTender.applicationGuidance.portalUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-primary text-xs px-3.5 py-1.5 shadow-sm flex items-center gap-1.5 shrink-0"
-                    >
-                      Open Portal <ExternalLink size={13} />
-                    </a>
-                  </div>
-
-                  <div className="text-[11px] text-muted-foreground space-y-1 pt-1 border-t border-primary/10">
-                    <span className="font-semibold text-foreground">Application Process:</span>
-                    {selectedTender.applicationGuidance.submissionSteps.map((step, idx) => (
-                      <div key={idx} className="flex items-start gap-1.5">
-                        <span className="font-bold text-primary">{idx + 1}.</span>
-                        <span>{step}</span>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-
-                {/* Footer buttons */}
-                <div className="flex items-center justify-between pt-2">
-                  <button
-                    onClick={() => setActiveTab('search')}
-                    className="text-xs font-semibold text-muted-foreground hover:text-foreground"
-                  >
-                    ← Back to Matched Tenders
-                  </button>
-                  <Link
-                    href={`/tender/${selectedTender.id}`}
-                    onClick={() => setIsOpen(false)}
-                    className="btn-secondary text-xs px-4 py-2"
-                  >
-                    Open Full BOQ & Workspace
-                  </Link>
-                </div>
-              </div>
-            )}
+            <div className="p-4 border-t border-border bg-card flex items-center justify-between">
+              <span className="text-xs font-semibold text-muted-foreground">
+                Deadline: {selectedTender.liveCountdown}
+              </span>
+              <Link
+                href={`/tender-detail?id=${selectedTender.id}`}
+                onClick={() => {
+                  setSelectedTender(null);
+                  setIsOpen(false);
+                }}
+                className="btn-primary text-xs py-2 px-4 flex items-center gap-1.5"
+              >
+                Open Full Tender Workspace
+                <ArrowRight size={14} />
+              </Link>
+            </div>
           </div>
         </div>
       )}
