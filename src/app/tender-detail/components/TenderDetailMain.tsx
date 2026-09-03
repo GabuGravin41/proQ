@@ -9,9 +9,11 @@ import ComplianceChecklist from './ComplianceChecklist';
 import {
   FileText, List, ChevronDown, ChevronUp, Download, Sparkles,
   Layers, FileSpreadsheet, Calendar, ShieldCheck, ExternalLink,
-  MapPin, Clock, Building2, Check
+  MapPin, Clock, Building2, Check, Lock, ArrowRight
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { useAuth } from '@/lib/authContext';
+import PaywallModal from '@/app/components/PaywallModal';
 
 interface TenderDetailMainProps {
   tender: Tender;
@@ -112,10 +114,19 @@ function getBoqItemsForTender(tender: Tender) {
 }
 
 export default function TenderDetailMain({ tender }: TenderDetailMainProps) {
+  const { user } = useAuth();
+  const isSubscriber = user?.role === 'subscriber' || user?.role === 'admin';
   const [activeTab, setActiveTab] = useState<'overview' | 'boq' | 'documents' | 'timeline' | 'compliance'>('overview');
+  const [paywallOpen, setPaywallOpen] = useState(false);
+  const [paywallFeature, setPaywallFeature] = useState('Bill of Quantities (BOQ) CSV/Excel Export');
   const boqItems = getBoqItemsForTender(tender);
 
   const handleExportBoq = () => {
+    if (!isSubscriber) {
+      setPaywallFeature('Bill of Quantities (BOQ) CSV/Excel Export');
+      setPaywallOpen(true);
+      return;
+    }
     const csvHeader = 'Item ID,Description / Specification,Quantity,Unit of Measure,Benchmark Unit Rate\n';
     const csvRows = boqItems.map(b => `"${b.id}","${b.item}",${b.qty},"${b.unit}","${b.unitRate}"`).join('\n');
     const blob = new Blob([csvHeader + csvRows], { type: 'text/csv;charset=utf-8;' });
@@ -236,7 +247,7 @@ export default function TenderDetailMain({ tender }: TenderDetailMainProps) {
       {/* Tab 2: Bill of Quantities (BOQ) */}
       {activeTab === 'boq' && (
         <div className="space-y-4 animate-fade-in">
-          <div className="card p-6">
+          <div className="card p-6 relative overflow-hidden">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-4 pb-4 border-b border-border">
               <div>
                 <h2 className="text-base font-bold text-foreground flex items-center gap-2">
@@ -247,12 +258,18 @@ export default function TenderDetailMain({ tender }: TenderDetailMainProps) {
                   Structured line-item quantities for estimating and pricing takeoff.
                 </p>
               </div>
-              <button onClick={handleExportBoq} className="btn-primary text-xs shrink-0 self-start sm:self-auto">
-                <Download size={14} /> Export BOQ (CSV / Excel)
+              <button
+                onClick={handleExportBoq}
+                className={`btn-primary text-xs shrink-0 self-start sm:self-auto flex items-center gap-1.5 ${
+                  !isSubscriber ? 'bg-emerald-600 hover:bg-emerald-700' : ''
+                }`}
+              >
+                {!isSubscriber ? <Lock size={13} /> : <Download size={14} />}
+                Export BOQ (CSV / Excel)
               </button>
             </div>
 
-            <div className="overflow-x-auto">
+            <div className="overflow-x-auto relative">
               <table className="w-full text-xs">
                 <thead>
                   <tr className="border-b border-border bg-muted/50 text-muted-foreground">
@@ -264,18 +281,57 @@ export default function TenderDetailMain({ tender }: TenderDetailMainProps) {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-border">
-                  {boqItems.map((item, idx) => (
-                    <tr key={item.id} className="hover:bg-muted/30 transition-colors">
-                      <td className="py-3 px-3 font-mono text-muted-foreground">{idx + 1}</td>
-                      <td className="py-3 px-3 font-medium text-foreground">{item.item}</td>
-                      <td className="py-3 px-3 text-right font-bold font-tabular text-primary">{item.qty.toLocaleString()}</td>
-                      <td className="py-3 px-3 text-muted-foreground">{item.unit}</td>
-                      <td className="py-3 px-3 text-right font-mono font-bold text-foreground">{item.unitRate}</td>
-                    </tr>
-                  ))}
+                  {boqItems.map((item, idx) => {
+                    const isBlurred = !isSubscriber && idx >= 2;
+                    return (
+                      <tr
+                        key={item.id}
+                        className={`transition-colors ${
+                          isBlurred
+                            ? 'blur-[3.5px] select-none pointer-events-none opacity-40 bg-muted/10'
+                            : 'hover:bg-muted/30'
+                        }`}
+                      >
+                        <td className="py-3 px-3 font-mono text-muted-foreground">{idx + 1}</td>
+                        <td className="py-3 px-3 font-medium text-foreground">{item.item}</td>
+                        <td className="py-3 px-3 text-right font-bold font-tabular text-primary">{item.qty.toLocaleString()}</td>
+                        <td className="py-3 px-3 text-muted-foreground">{item.unit}</td>
+                        <td className="py-3 px-3 text-right font-mono font-bold text-foreground">{item.unitRate}</td>
+                      </tr>
+                    );
+                  })}
                 </tbody>
               </table>
             </div>
+
+            {/* High-converting Pro Unlock Banner */}
+            {!isSubscriber && (
+              <div className="mt-5 p-5 rounded-2xl bg-gradient-to-r from-emerald-500/10 via-card to-emerald-500/5 border border-emerald-500/30 flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="space-y-1 text-center sm:text-left">
+                  <div className="flex items-center justify-center sm:justify-start gap-2">
+                    <span className="p-1.5 rounded-lg bg-emerald-600 text-white font-bold text-xs shadow-sm">
+                      <Lock size={13} />
+                    </span>
+                    <h3 className="text-sm font-bold text-foreground">
+                      Unlock Full BOQ Line Items & Benchmark Rates
+                    </h3>
+                  </div>
+                  <p className="text-xs text-muted-foreground max-w-xl">
+                    Showing 2 of {boqItems.length} items in free preview. Active proQ Pro members unlock complete quantity schedules, rate estimates, and 1-click Excel/CSV export.
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    setPaywallFeature('Full Bill of Quantities (BOQ) Schedule & Takeoffs');
+                    setPaywallOpen(true);
+                  }}
+                  className="btn-primary text-xs font-bold py-2.5 px-4 bg-emerald-600 hover:bg-emerald-700 shrink-0 flex items-center gap-2 shadow-sm"
+                >
+                  <span>Unlock with M-Pesa (from KES 499)</span>
+                  <ArrowRight size={14} />
+                </button>
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -408,6 +464,13 @@ export default function TenderDetailMain({ tender }: TenderDetailMainProps) {
           </div>
         </div>
       )}
+
+      {/* proQ Pro Paywall Modal */}
+      <PaywallModal
+        open={paywallOpen}
+        feature={paywallFeature}
+        onClose={() => setPaywallOpen(false)}
+      />
     </div>
   );
 }

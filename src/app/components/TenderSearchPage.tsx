@@ -140,25 +140,46 @@ export default function TenderSearchPage() {
     }
 
     if (filters.counties.length > 0) {
-      result = result.filter(t => filters.counties.includes(t.county));
+      result = result.filter(t => 
+        filters.counties.some(c => 
+          c.toLowerCase() === (t.county || '').toLowerCase() ||
+          (t.county || '').toLowerCase().includes(c.toLowerCase())
+        )
+      );
     }
     if (filters.methods.length > 0) {
       result = result.filter(t => filters.methods.includes(t.procurementMethod));
     }
     if (filters.agpoCategories.length > 0) {
-      result = result.filter(t => filters.agpoCategories.includes(t.agpoCategory));
+      result = result.filter(t => {
+        if (filters.agpoCategories.includes('Special Groups') && (t.agpoCategory === 'Youth' || t.agpoCategory === 'Women' || t.agpoCategory === 'PWD')) {
+          return true;
+        }
+        return filters.agpoCategories.includes(t.agpoCategory);
+      });
     }
     if (filters.entityTypes.length > 0) {
       result = result.filter(t => filters.entityTypes.includes(t.entityType));
     }
     if (filters.categories.length > 0) {
-      result = result.filter(t => filters.categories.includes(t.category));
+      result = result.filter(t => 
+        filters.categories.some(cat => 
+          cat.toLowerCase() === (t.category || '').toLowerCase() ||
+          (t.category || '').toLowerCase().includes(cat.toLowerCase())
+        )
+      );
     }
     if (filters.status.length > 0) {
       result = result.filter(t => filters.status.includes(t.status));
     }
     if (filters.sources.length > 0) {
-      result = result.filter(t => filters.sources.includes(t.source));
+      result = result.filter(t => 
+        filters.sources.some(s => {
+          const sLower = s.toLowerCase();
+          const tLower = (t.source || '').toLowerCase();
+          return tLower.includes(sLower) || sLower.includes(tLower);
+        })
+      );
     }
     if (filters.valueMin) {
       result = result.filter(t => t.estimatedValue !== null && t.estimatedValue >= Number(filters.valueMin) * 1000000);

@@ -17,13 +17,13 @@ const sourceOptions = ['PPIP', 'e-GP', 'Institutional', 'County'];
 export default function TenderFilters({ filters, onFilterChange, onClose }: TenderFiltersProps) {
   const [expandedSections, setExpandedSections] = useState<Record<string, boolean>>({
     status: true,
+    category: true,
     county: true,
     agpo: true,
+    source: true,
     method: false,
     entity: false,
-    category: false,
     value: false,
-    source: false,
   });
 
   const toggleSection = (key: string) => {
