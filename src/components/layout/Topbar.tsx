@@ -31,9 +31,9 @@ export default function Topbar() {
             className="hidden lg:flex items-center gap-2 px-3 py-1 rounded-full bg-muted/60 border border-border text-xs text-foreground hover:bg-muted transition-colors font-medium"
           >
             <span className="w-2 h-2 rounded-full bg-emerald-600 dark:bg-emerald-400" />
-            <span>2,500 Live Tenders</span>
+            <span>3,000 Live Tenders</span>
             <span className="text-muted-foreground">•</span>
-            <span className="font-semibold text-primary">KES 123.5B Value</span>
+            <span className="font-semibold text-primary">KES 163.8B Value</span>
           </Link>
         </div>
 
