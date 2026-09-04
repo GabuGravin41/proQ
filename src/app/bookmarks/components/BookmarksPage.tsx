@@ -156,16 +156,15 @@ export default function BookmarksPage() {
                       Docs
                     </a>
                   )}
-                  {tender.submissionVenue === 'e-GP' && tender.egpLink && (
-                    <a
-                      href={tender.egpLink}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-secondary text-xs py-1.5 px-3"
-                    >
-                      <ExternalLink size={12} />
-                    </a>
-                  )}
+                  <a
+                    href={tender.egpLink || "https://supplier.treasury.go.ke/iri/portal"}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="btn-secondary text-xs py-1.5 px-3 border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100"
+                    title="Search on e-GP / IFMIS Portal"
+                  >
+                    <ExternalLink size={13} />
+                  </a>
                   <button
                     onClick={() => removeBookmark(tender.id)}
                     className="btn-secondary text-xs py-1.5 px-3 text-danger border-danger/20 hover:bg-danger-bg"

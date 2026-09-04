@@ -205,17 +205,15 @@ export default function TenderCard({ tender, onMatchScoreClick }: TenderCardProp
             </button>
           )}
 
-          {tender.submissionVenue === 'e-GP' && tender.egpLink && (
-            <a
-              href={tender.egpLink}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="btn-secondary text-xs py-1.5 px-3"
-              title="Open in e-GP Kenya"
-            >
-              <ExternalLink size={13} />
-            </a>
-          )}
+          <a
+            href={tender.egpLink || "https://supplier.treasury.go.ke/iri/portal"}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="btn-secondary text-xs py-1.5 px-3 border-emerald-200 bg-emerald-50 text-emerald-700 hover:bg-emerald-100 dark:border-emerald-900/50 dark:bg-emerald-950/20 dark:hover:bg-emerald-900/40"
+            title="Search on e-GP / IFMIS Portal"
+          >
+            <ExternalLink size={13} />
+          </a>
         </div>
       </div>
     </div>

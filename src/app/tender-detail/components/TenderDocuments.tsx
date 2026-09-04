@@ -52,6 +52,15 @@ function getDocumentsForTender(tender: Tender) {
       verified: true,
       url: tender.documentUrl || 'https://tenders.go.ke',
     },
+    {
+      id: 'doc-004',
+      name: `Electronic Procurement (IFMIS) Portal`,
+      type: 'PORTAL',
+      size: 'External',
+      available: true,
+      verified: true,
+      url: tender.egpLink || 'https://supplier.treasury.go.ke/iri/portal',
+    }
   ];
 }
 
@@ -120,9 +129,9 @@ export default function TenderDocuments({ tender }: TenderDocumentsProps) {
                 <p className="text-sm font-medium text-foreground truncate">{doc.name}</p>
                 <div className="flex items-center gap-2 mt-0.5">
                   <span className="text-xs text-muted-foreground font-semibold">{doc.type}</span>
-                  <span className="text-xs text-muted-foreground">·</span>
+                  <span className="text-xs text-muted-foreground">•</span>
                   <span className="text-xs text-muted-foreground">{doc.size}</span>
-                  <span className="text-xs text-muted-foreground">·</span>
+                  <span className="text-xs text-muted-foreground">•</span>
                   <span className="flex items-center gap-0.5 text-xs text-success">
                     <CheckCircle size={10} />
                     Verified Source

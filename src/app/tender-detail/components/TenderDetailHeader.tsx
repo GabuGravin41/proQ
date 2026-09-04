@@ -149,17 +149,15 @@ export default function TenderDetailHeader({ tender }: TenderDetailHeaderProps) 
               </button>
             </div>
 
-            {tender.submissionVenue === 'e-GP' && tender.egpLink && (
-              <a
-                href={tender.egpLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-primary text-sm px-4 py-2 whitespace-nowrap"
-              >
-                <ExternalLink size={14} />
-                Open in e-GP Kenya
-              </a>
-            )}
+            <a
+              href={tender.egpLink || "https://supplier.treasury.go.ke/iri/portal"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-primary text-sm px-4 py-2 whitespace-nowrap shadow-sm bg-[#16A34A] hover:bg-[#15803D]"
+            >
+              <ExternalLink size={14} />
+              Apply via e-GP (IFMIS)
+            </a>
           </div>
         </div>
       </div>
