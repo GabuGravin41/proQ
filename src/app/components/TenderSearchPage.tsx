@@ -1,5 +1,5 @@
 'use client';
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useDeferredValue } from 'react';
 import { mockTenders, Tender } from '@/lib/tenderData';
 import TenderSearchHeader from './TenderSearchHeader';
 import TenderFilters from './TenderFilters';
@@ -96,9 +96,7 @@ export default function TenderSearchPage() {
   };
 
   const handleFilterChange = (key: keyof FilterState, value: FilterState[keyof FilterState]) => {
-    setIsLoading(true);
     setFilters(prev => ({ ...prev, [key]: value }));
-    setTimeout(() => setIsLoading(false), 200);
   };
 
   const handleSaveSearch = () => {
@@ -114,13 +112,16 @@ export default function TenderSearchPage() {
     setFilters(prev => ({ ...prev, query: promptText, semanticMode: true }));
   };
 
+  const deferredFilters = useDeferredValue(filters);
+  const isFiltering = filters !== deferredFilters;
+
   const filteredTenders = useMemo(() => {
     let result = mockTenders.map(t => enrichTenderWithLiveStatus(t));
 
-    if (filters.semanticMode && filters.query.trim()) {
+    if (deferredFilters.semanticMode && deferredFilters.query.trim()) {
       // Dynamic semantic scoring & sorting
       result = result.map(t => {
-        const { score, reasons } = calculateSemanticMatch(t, filters.query);
+        const { score, reasons } = calculateSemanticMatch(t, deferredFilters.query);
         return {
           ...t,
           matchScore: score,
@@ -128,8 +129,8 @@ export default function TenderSearchPage() {
         };
       });
       result.sort((a, b) => (b.matchScore ?? 0) - (a.matchScore ?? 0));
-    } else if (filters.query.trim()) {
-      const q = filters.query.toLowerCase();
+    } else if (deferredFilters.query.trim()) {
+      const q = deferredFilters.query.toLowerCase();
       result = result.filter(t =>
         t.title.toLowerCase().includes(q) ||
         t.procuringEntity.toLowerCase().includes(q) ||
@@ -139,67 +140,67 @@ export default function TenderSearchPage() {
       );
     }
 
-    if (filters.counties.length > 0) {
+    if (deferredFilters.counties.length > 0) {
       result = result.filter(t => 
-        filters.counties.some(c => 
+        deferredFilters.counties.some(c => 
           c.toLowerCase() === (t.county || '').toLowerCase() ||
           (t.county || '').toLowerCase().includes(c.toLowerCase())
         )
       );
     }
-    if (filters.methods.length > 0) {
-      result = result.filter(t => filters.methods.includes(t.procurementMethod));
+    if (deferredFilters.methods.length > 0) {
+      result = result.filter(t => deferredFilters.methods.includes(t.procurementMethod));
     }
-    if (filters.agpoCategories.length > 0) {
+    if (deferredFilters.agpoCategories.length > 0) {
       result = result.filter(t => {
-        if (filters.agpoCategories.includes('Special Groups') && (t.agpoCategory === 'Youth' || t.agpoCategory === 'Women' || t.agpoCategory === 'PWD')) {
+        if (deferredFilters.agpoCategories.includes('Special Groups') && (t.agpoCategory === 'Youth' || t.agpoCategory === 'Women' || t.agpoCategory === 'PWD')) {
           return true;
         }
-        return filters.agpoCategories.includes(t.agpoCategory);
+        return deferredFilters.agpoCategories.includes(t.agpoCategory);
       });
     }
-    if (filters.entityTypes.length > 0) {
-      result = result.filter(t => filters.entityTypes.includes(t.entityType));
+    if (deferredFilters.entityTypes.length > 0) {
+      result = result.filter(t => deferredFilters.entityTypes.includes(t.entityType));
     }
-    if (filters.categories.length > 0) {
+    if (deferredFilters.categories.length > 0) {
       result = result.filter(t => 
-        filters.categories.some(cat => 
+        deferredFilters.categories.some(cat => 
           cat.toLowerCase() === (t.category || '').toLowerCase() ||
           (t.category || '').toLowerCase().includes(cat.toLowerCase())
         )
       );
     }
-    if (filters.status.length > 0) {
-      result = result.filter(t => filters.status.includes(t.status));
+    if (deferredFilters.status.length > 0) {
+      result = result.filter(t => deferredFilters.status.includes(t.status));
     }
-    if (filters.sources.length > 0) {
+    if (deferredFilters.sources.length > 0) {
       result = result.filter(t => 
-        filters.sources.some(s => {
+        deferredFilters.sources.some(s => {
           const sLower = s.toLowerCase();
           const tLower = (t.source || '').toLowerCase();
           return tLower.includes(sLower) || sLower.includes(tLower);
         })
       );
     }
-    if (filters.valueMin) {
-      result = result.filter(t => t.estimatedValue !== null && t.estimatedValue >= Number(filters.valueMin) * 1000000);
+    if (deferredFilters.valueMin) {
+      result = result.filter(t => t.estimatedValue !== null && t.estimatedValue >= Number(deferredFilters.valueMin) * 1000000);
     }
-    if (filters.valueMax) {
-      result = result.filter(t => t.estimatedValue !== null && t.estimatedValue <= Number(filters.valueMax) * 1000000);
+    if (deferredFilters.valueMax) {
+      result = result.filter(t => t.estimatedValue !== null && t.estimatedValue <= Number(deferredFilters.valueMax) * 1000000);
     }
 
-    if (!filters.semanticMode) {
+    if (!deferredFilters.semanticMode) {
       result.sort((a, b) => {
-        if (filters.sortBy === 'closing-date') return a.daysRemaining - b.daysRemaining;
-        if (filters.sortBy === 'match-score') return (b.matchScore ?? 0) - (a.matchScore ?? 0);
-        if (filters.sortBy === 'value') return (b.estimatedValue ?? 0) - (a.estimatedValue ?? 0);
-        if (filters.sortBy === 'published-date') return new Date(b.publishedDate).getTime() - new Date(a.publishedDate).getTime();
+        if (deferredFilters.sortBy === 'closing-date') return a.daysRemaining - b.daysRemaining;
+        if (deferredFilters.sortBy === 'match-score') return (b.matchScore ?? 0) - (a.matchScore ?? 0);
+        if (deferredFilters.sortBy === 'value') return (b.estimatedValue ?? 0) - (a.estimatedValue ?? 0);
+        if (deferredFilters.sortBy === 'published-date') return new Date(b.publishedDate).getTime() - new Date(a.publishedDate).getTime();
         return 0;
       });
     }
 
     return result;
-  }, [filters]);
+  }, [deferredFilters]);
 
   const activeFilterCount = [
     filters.counties.length,
@@ -281,7 +282,7 @@ export default function TenderSearchPage() {
         <div className="flex-1 min-w-0">
           <TenderResultsGrid
             tenders={filteredTenders}
-            isLoading={isLoading}
+            isLoading={isFiltering}
             sortBy={filters.sortBy}
             onSortChange={(v) => handleFilterChange('sortBy', v)}
             onMatchScoreClick={() => {
