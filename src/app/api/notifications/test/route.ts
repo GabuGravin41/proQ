@@ -4,7 +4,7 @@ import {
   sendSmsNotification,
   formatTenderAlertMessage,
 } from '@/lib/notifications';
-import { mockTenders } from '@/lib/tenders';
+import { mockTenders } from '@/lib/tenderData';
 
 export async function POST(req: NextRequest) {
   try {

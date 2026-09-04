@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { mockTenders } from '@/lib/tenders';
+import { mockTenders } from '@/lib/tenderData';
 import {
   sendWhatsAppNotification,
   sendSmsNotification,
