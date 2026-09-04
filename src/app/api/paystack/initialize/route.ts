@@ -19,6 +19,7 @@ export async function POST(req: NextRequest) {
       planId: planId || 'pro',
       phone: phone || '',
       userId: userId || 'guest',
+      callbackUrl: `${req.nextUrl.origin}/pricing?payment=success`,
     });
 
     if (result.status && result.data) {
